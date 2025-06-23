@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Conference Create / Join - MUN</title>
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/conference.css" />
+  <script defer src="js/socket.js" type="module"></script>
+  <script defer src="js/conference.js" type="module"></script>
+</head>
+<body>
+  <main class="conference-container">
+    <h1>Welcome to MUN Conference</h1>
+
+    <section class="create-conference-section card">
+      <h2>Create a New Conference</h2>
+      <form id="createConferenceForm">
+        <label for="confName">Conference Name:</label>
+        <input type="text" id="confName" name="confName" required minlength="3" maxlength="40" />
+        <button type="submit">Create Conference</button>
+      </form>
+      <div id="createResult" class="result-msg"></div>
+    </section>
+
+    <section class="join-conference-section card">
+      <h2>Join an Existing Conference</h2>
+      <form id="joinConferenceForm">
+        <label for="joinCode">Conference Code:</label>
+        <input type="text" id="joinCode" name="joinCode" required maxlength="6" minlength="6" />
+
+        <label for="joinRole">Role:</label>
+        <select id="joinRole" name="joinRole" required>
+          <option value="4" selected>Delegate</option>
+          <option value="2">Moderator</option>
+          <option value="3">Chair</option>
+        </select>
+
+        <div id="countryContainer" style="display: block;">
+          <label for="countrySelect">Select Country (Delegates only):</label>
+          <select id="countrySelect" name="countrySelect">
+            <option value="">--Select Country--</option>
+            <option value="United States">United States</option>
+            <option value="China">China</option>
+            <option value="France">France</option>
+            <option value="Germany">Germany</option>
+            <option value="India">India</option>
+            <option value="Japan">Japan</option>
+            <option value="Russia">Russia</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <!-- Add more countries as needed -->
+          </select>
+        </div>
+
+        <button type="submit">Join Conference</button>
+      </form>
+      <div id="joinResult" class="result-msg"></div>
+    </section>
+  </main>
+</body>
+</html>

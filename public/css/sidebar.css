@@ -1,0 +1,95 @@
+/* === Sidebar Base Styles === */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100%;
+  background-color: #000000;
+  color: #f5e6c5;
+  transition: width 0.3s ease;
+  overflow-x: hidden;
+  z-index: 200;
+  border-right: 1px solid #2a2a2a;
+  box-shadow: 2px 0 8px rgba(203, 161, 53, 0.15);
+  font-family: 'Open Sans', sans-serif;
+}
+
+/* === Collapsed Sidebar === */
+.sidebar.collapsed {
+  width: 70px;
+}
+
+/* === Toggle Button === */
+.toggle-btn {
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: #f5e6c5;
+  padding: 1rem;
+  text-align: right;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+/* === Sidebar Navigation === */
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  transition: background 0.25s ease;
+  font-size: 1rem;
+  white-space: nowrap;
+  gap: 1rem;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.sidebar li:hover {
+  background-color: #1a1a1a;
+  color: #cba135;
+}
+
+/* === Sidebar Icon + Label === */
+.sidebar .icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.sidebar .label {
+  transition: opacity 0.3s ease;
+}
+
+/* === Collapsed Label === */
+.sidebar.collapsed .label {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+/* === Responsive Behavior === */
+@media screen and (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    border-right: none;
+    box-shadow: none;
+  }
+
+  .sidebar.collapsed {
+    width: 100%;
+  }
+
+  .sidebar li {
+    justify-content: center;
+  }
+
+  .sidebar .label {
+    display: none;
+  }
+}

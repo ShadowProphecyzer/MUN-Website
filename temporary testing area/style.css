@@ -1,0 +1,207 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Open+Sans:wght@400;600&display=swap');
+
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base */
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: #000000;
+  color: #f5e6c5;
+  overflow-x: hidden;
+}
+
+/* Menu Icon */
+.menu-icon {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  cursor: pointer;
+  z-index: 1001;
+  transition: transform 0.6s ease;
+}
+
+.menu-icon.active {
+  transform: rotate(360deg);
+}
+
+.menu-icon .bar {
+  width: 30px;
+  height: 4px;
+  background-color: #f5e6c5;
+  margin: 6px 0;
+  border-radius: 2px;
+  transition: 0.4s ease;
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  height: 100%;
+  width: 250px;
+  background: #000000;
+  color: #f5e6c5;
+  transition: 0.4s ease;
+  padding-top: 60px;
+  z-index: 1000;
+  border-right: 1px solid #cba135;
+}
+
+.sidebar.active {
+  left: 0;
+}
+
+.sidebar ul {
+  list-style: none;
+}
+
+.sidebar ul li {
+  padding: 20px 30px;
+  opacity: 0;
+  transform: translateX(-20px);
+  animation: slideIn 0.5s ease forwards;
+}
+
+.sidebar ul li:nth-child(1) { animation-delay: 0.1s; }
+.sidebar ul li:nth-child(2) { animation-delay: 0.2s; }
+.sidebar ul li:nth-child(3) { animation-delay: 0.3s; }
+.sidebar ul li:nth-child(4) { animation-delay: 0.4s; }
+.sidebar ul li:nth-child(5) { animation-delay: 0.5s; }
+.sidebar ul li:nth-child(6) { animation-delay: 0.6s; }
+.sidebar ul li:nth-child(7) { animation-delay: 0.7s; }
+
+.sidebar ul li a {
+  color: #f5e6c5;
+  text-decoration: none;
+  font-size: 1.1em;
+  font-family: 'Playfair Display', serif;
+  display: block;
+  position: relative;
+  transition: 0.3s ease;
+}
+
+.sidebar ul li a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  left: 0;
+  bottom: -5px;
+  background: #cba135;
+  transition: 0.3s ease;
+}
+
+.sidebar ul li a:hover::after {
+  width: 100%;
+}
+
+.sidebar ul li:hover {
+  background: #1a1a1a;
+  transform: scale(1.05);
+}
+
+/* Slide-in animation */
+@keyframes slideIn {
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Content Area */
+.content-area {
+  margin-left: 270px;
+  padding: 60px 40px;
+  transition: margin-left 0.4s ease;
+}
+
+.content-area h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #cba135;
+}
+
+.content-area p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #f5e6c5;
+}
+
+@media (max-width: 768px) {
+  .content-area {
+    margin-left: 20px;
+    padding-top: 100px;
+  }
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Modal Box */
+.modal-box {
+  background-color: #000000;
+  border: 2px solid #cba135;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  color: #f5e6c5;
+  font-family: 'Open Sans', sans-serif;
+  max-width: 350px;
+  box-shadow: 0 0 15px rgba(203, 161, 53, 0.3);
+}
+
+.modal-box p {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Buttons */
+.modal-buttons {
+  display: flex;
+  justify-content: space-around;
+}
+
+.modal-buttons button {
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#confirmLogout {
+  background-color: #cba135;
+  color: #000000;
+}
+
+#cancelLogout {
+  background-color: #333;
+  color: #f5e6c5;
+}
+
+#confirmLogout:hover {
+  background-color: #a87e22;
+}
+
+#cancelLogout:hover {
+  background-color: #555;
+}

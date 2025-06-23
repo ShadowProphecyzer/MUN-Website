@@ -1,0 +1,123 @@
+/* === Contributions Section Styles === */
+#contributions {
+  padding: 3rem 2rem;
+  font-family: 'Open Sans', sans-serif;
+  background-color: #000000;
+  color: #f5e6c5;
+  min-height: 100vh;
+  animation: fadeIn 0.5s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Section Title */
+#contributions h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #d6c189;
+}
+
+/* Contributions Table */
+.contributions-table {
+  width: 100%;
+  max-width: 900px;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+
+.contributions-table th,
+.contributions-table td {
+  border: 1px solid #cba135;
+  padding: 0.75rem 1rem;
+  text-align: center;
+}
+
+.contributions-table th {
+  background-color: #1a1a1a;
+  font-weight: bold;
+  color: #cba135;
+}
+
+.contributions-table td {
+  background-color: #111;
+  font-size: 1rem;
+}
+
+/* Buttons for +/- controls */
+.contrib-btn {
+  background-color: #cba135;
+  border: none;
+  border-radius: 4px;
+  color: #000;
+  font-weight: bold;
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 0 0.3rem;
+  min-width: 26px;
+}
+
+.contrib-btn:disabled {
+  background-color: #7a6a2e;
+  cursor: not-allowed;
+}
+
+.contrib-btn:hover:not(:disabled) {
+  background-color: #a87e22;
+}
+
+/* Contributions number cells */
+.contrib-number {
+  min-width: 30px;
+  font-weight: bold;
+  color: #f5e6c5;
+}
+
+/* Bottom "awards" container */
+.awards-container {
+  max-width: 900px;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.award-box {
+  flex: 1;
+  background-color: #1a1a1a;
+  border: 1px solid #cba135;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 0 12px rgba(203, 161, 53, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.award-box label {
+  font-weight: bold;
+  color: #cba135;
+  margin-bottom: 0.5rem;
+}
+
+.award-select {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #cba135;
+  background-color: #111;
+  color: #f5e6c5;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.award-select:hover {
+  background-color: #222;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

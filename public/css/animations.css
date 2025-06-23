@@ -1,0 +1,150 @@
+/* Side menu width and text fade */
+.side-menu {
+  width: 60px;
+  transition: width 0.3s ease;
+  overflow: hidden;
+  background-color: #000000;
+  color: #f5e6c5;
+}
+
+.side-menu.open {
+  width: 220px;
+}
+
+/* Menu item text fade in/out */
+.side-menu .menu-item-text {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.side-menu.open .menu-item-text {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Icon and text alignment */
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.menu-item:hover {
+  background-color: #cba135;
+  color: #000;
+}
+
+/* Icons style */
+.menu-item-icon {
+  font-size: 1.3rem;
+  margin-right: 12px;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.side-menu.closed .menu-item-icon {
+  margin-right: 0;
+  text-align: center;
+  width: 100%;
+}
+
+/* Section switching animations */
+.section {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.section.active {
+  opacity: 1;
+  pointer-events: auto;
+  position: relative;
+}
+
+/* Fade-in messages */
+.message {
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Approved/declined amendments */
+.amendment {
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  background-color: #2a2a2a;
+  transition: background-color 0.4s ease;
+}
+
+.amendment.approved {
+  background-color: #d4edda; /* light green */
+  color: #155724;
+  animation: approveGlow 1s ease forwards;
+}
+
+.amendment.declined {
+  background-color: #f8d7da; /* light red */
+  color: #721c24;
+  animation: declineGlow 1s ease forwards;
+}
+
+@keyframes approveGlow {
+  0% { box-shadow: 0 0 0px #28a745; }
+  100% { box-shadow: 0 0 15px #28a745; }
+}
+
+@keyframes declineGlow {
+  0% { box-shadow: 0 0 0px #dc3545; }
+  100% { box-shadow: 0 0 15px #dc3545; }
+}
+
+/* Button hover */
+button {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+/* Contribution control buttons */
+.contribution-btn {
+  background-color: #cba135;
+  border: none;
+  padding: 0.25rem 0.6rem;
+  color: #000;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+.contribution-btn:active {
+  transform: scale(0.95);
+}
+
+/* Cooldown visual feedback for buttons */
+.contribution-btn.cooldown {
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: wait;
+}
