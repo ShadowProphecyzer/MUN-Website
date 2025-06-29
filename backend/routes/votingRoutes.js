@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const { protect } = require('../middleware/authMiddleware');
-const { roleCheck } = require('../middleware/roleMiddleware');
+const { isOwnerOrChair, isDelegate } = require('../middleware/roleMiddleware');
 const {
   openVoting,
   closeVoting,
@@ -10,20 +10,16 @@ const {
   getVoteResults,
 } = require('../controllers/votingController');
 
-// POST /api/conferences/:conferenceId/voting/open
-// Chairs open voting
-router.post('/open', protect, roleCheck(['chair']), openVoting);
+// Open voting (owners and chairs only)
+router.post('/open', protect, isOwnerOrChair, openVoting);
 
-// POST /api/conferences/:conferenceId/voting/close
-// Chairs close voting
-router.post('/close', protect, roleCheck(['chair']), closeVoting);
+// Close voting (owners and chairs only)
+router.post('/close', protect, isOwnerOrChair, closeVoting);
 
-// POST /api/conferences/:conferenceId/voting/cast
-// Delegates cast vote
-router.post('/cast', protect, roleCheck(['delegate']), castVote);
+// Cast vote (delegates only)
+router.post('/cast', protect, isDelegate, castVote);
 
-// GET /api/conferences/:conferenceId/voting/results
-// Chairs see live tally
-router.get('/results', protect, roleCheck(['chair']), getVoteResults);
+// Get vote results (owners and chairs only)
+router.get('/results', protect, isOwnerOrChair, getVoteResults);
 
 module.exports = router;

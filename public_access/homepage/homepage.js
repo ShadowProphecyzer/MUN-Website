@@ -1,80 +1,86 @@
 document.addEventListener('DOMContentLoaded', function() {
   const categories = document.querySelectorAll('.category');
   const showcase = document.getElementById('category-showcase');
+  const showcaseImage = showcase.querySelector('.showcase-image');
+  const showcaseTitle = showcase.querySelector('h3');
+  const showcaseDescription = showcase.querySelector('p');
+  const showcaseButton = showcase.querySelector('button');
 
-  const productContent = {
-    "category 1": {
-      imgSrc: '../attachments/earring.jpg',
-      title: 'Earrings',
-      description: 'Explore our beautiful collection of earrings.',
-      buttonText: 'SIGN-UP',
-      tags: 'Learn More | Contact Us'
+  // Feature data for each category
+  const featureData = {
+    'real-time': {
+      title: 'Real-Time Communication',
+      description: 'Stay connected with instant messaging, moderated chat rooms, and live notifications. Our platform ensures seamless communication between delegates, chairs, and moderators.',
+      image: '../attatchments/logo.jpg',
+      buttonText: 'Start Chatting'
     },
-    "category 2": {
-      imgSrc: '../attachments/bracelet.jpg',
-      title: 'Bracelets',
-      description: 'Browse our unique bracelet collection.',
-      buttonText: 'SIGN-UP',
-      tags: 'Learn More | Contact Us'
+    'voting': {
+      title: 'Digital Voting System',
+      description: 'Conduct secure, transparent voting sessions with real-time results. Track voting history, manage multiple voting rounds, and ensure democratic decision-making.',
+      image: '../attatchments/logo.jpg',
+      buttonText: 'View Voting'
     },
-    "category 3": {
-      imgSrc: '../attachments/brooch.jpg',
-      title: 'Brooches',
-      description: 'Stylish brooches to complete your look.',
-      buttonText: 'SIGN-UP',
-      tags: 'Learn More | Contact Us'
+    'amendments': {
+      title: 'Amendment Management',
+      description: 'Streamline the amendment process with digital submission, review, and approval workflows. Track amendment status and maintain clear documentation.',
+      image: '../attatchments/logo.jpg',
+      buttonText: 'Submit Amendment'
     },
-    "category 4": {
-      imgSrc: '../attachments/necklace.jpg',
-      title: 'Necklaces',
-      description: 'Elegant necklaces for every occasion.',
-      buttonText: 'SIGN-UP',
-      tags: 'Learn More | Contact Us'
+    'dashboard': {
+      title: 'Conference Dashboard',
+      description: 'Our comprehensive dashboard provides real-time updates, participant management, and seamless conference coordination. Track voting, amendments, and contributions all in one place.',
+      image: '../attatchments/logo.jpg',
+      buttonText: 'Get Started'
     },
-    "category 5": {
-      imgSrc: '../attachments/pendant.jpg',
-      title: 'Pendants',
-      description: 'Gorgeous pendants to elevate your style.',
-      buttonText: 'SIGN-UP',
-      tags: 'Learn More | Contact Us'
+    'contributions': {
+      title: 'Contribution Tracking',
+      description: 'Monitor delegate participation and contributions throughout the conference. Track speaking time, resolution submissions, and overall engagement metrics.',
+      image: '../attatchments/logo.jpg',
+      buttonText: 'Track Progress'
     },
-    "category 6": {
-      imgSrc: '../attachments/ring.jpg',
-      title: 'Rings',
-      description: 'Exquisite rings for any occasion.',
-      buttonText: 'SIGN-UP',
-      tags: 'Learn More | Contact Us'
+    'notes': {
+      title: 'Collaborative Notes',
+      description: 'Take and share notes in real-time with other participants. Organize information by topic, delegate, or session for easy reference and collaboration.',
+      image: '../attatchments/logo.jpg',
+      buttonText: 'Start Notes'
     },
-    "category 7": {
-      imgSrc: '../attachments/chain.jpg',
-      title: 'Chains',
-      description: 'Smooth chains for beauty.',
-      buttonText: 'SIGN-UP',
-      tags: 'Learn More | Contact Us'
+    'database': {
+      title: 'Centralized Database',
+      description: 'Access all conference materials, resolutions, and historical data in one centralized location. Maintain comprehensive records for future reference.',
+      image: '../attatchments/logo.jpg',
+      buttonText: 'Browse Database'
     }
   };
 
-  categories.forEach(function(category) {
+  // Function to update showcase content
+  function updateShowcase(category) {
+    const data = featureData[category];
+    if (data) {
+      showcaseImage.src = data.image;
+      showcaseImage.alt = data.title;
+      showcaseTitle.textContent = data.title;
+      showcaseDescription.textContent = data.description;
+      showcaseButton.textContent = data.buttonText;
+    }
+  }
+
+  // Add click event listeners to categories
+  categories.forEach(category => {
     category.addEventListener('click', function() {
-      categories.forEach(cat => cat.classList.remove('active'));
-      category.classList.add('active');
-
-      const selected = category.dataset.category;
-      const content = productContent[selected];
-      if (!content) return;
-
-      showcase.style.opacity = 0;
-
-      setTimeout(() => {
-        showcase.querySelector('.showcase-image').src = content.imgSrc;
-        showcase.querySelector('h3').textContent = content.title;
-        showcase.querySelector('p').textContent = content.description;
-        showcase.querySelector('button').textContent = content.buttonText;
-        showcase.querySelector('.tags').textContent = content.tags;
-        showcase.style.opacity = 1;
-      }, 300);
+      // Remove active class from all categories
+      categories.forEach(c => c.classList.remove('active'));
+      
+      // Add active class to clicked category
+      this.classList.add('active');
+      
+      // Update showcase content
+      const categoryType = this.getAttribute('data-category');
+      updateShowcase(categoryType);
     });
   });
+
+  // Initialize with default category (dashboard)
+  updateShowcase('dashboard');
 });
 
 // Dark/Light Mode Toggle

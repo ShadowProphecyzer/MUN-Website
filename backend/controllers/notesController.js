@@ -79,7 +79,7 @@ exports.reviewMessage = async (req, res) => {
   }
 };
 
-// Get messages between two users (approved only)
+// Get messages between two users (ALL messages - approved, rejected, and pending)
 exports.getChatMessages = async (req, res) => {
   const { conferenceId } = req.params;
   const userId = req.user._id;
@@ -93,10 +93,9 @@ exports.getChatMessages = async (req, res) => {
       return res.status(400).json({ message: "Users not in conference" });
     }
 
-    // Fetch approved messages between the two roles
+    // Fetch ALL messages between the two roles (approved, rejected, and pending)
     const messages = await Note.find({
       conference: conferenceId,
-      approved: true,
       $or: [
         { sender: userRole._id, recipient: otherUserRole._id },
         { sender: otherUserRole._id, recipient: userRole._id },
@@ -108,6 +107,54 @@ exports.getChatMessages = async (req, res) => {
     res.json(messages);
   } catch (error) {
     console.error("Get chat messages error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Get message history for audit purposes (moderators and chairs only)
+exports.getMessageHistory = async (req, res) => {
+  const { conferenceId } = req.params;
+  const { status, senderId, recipientId, startDate, endDate } = req.query;
+
+  try {
+    let query = { conference: conferenceId };
+
+    // Filter by approval status
+    if (status && ['approved', 'rejected', 'pending'].includes(status)) {
+      query.approved = status === 'approved' ? true : status === 'rejected' ? false : null;
+    }
+
+    // Filter by sender
+    if (senderId) {
+      const senderRole = await UserConferenceRole.findOne({ user: senderId, conference: conferenceId });
+      if (senderRole) {
+        query.sender = senderRole._id;
+      }
+    }
+
+    // Filter by recipient
+    if (recipientId) {
+      const recipientRole = await UserConferenceRole.findOne({ user: recipientId, conference: conferenceId });
+      if (recipientRole) {
+        query.recipient = recipientRole._id;
+      }
+    }
+
+    // Filter by date range
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) query.createdAt.$gte = new Date(startDate);
+      if (endDate) query.createdAt.$lte = new Date(endDate);
+    }
+
+    const messages = await Note.find(query)
+      .populate('sender recipient', 'country role')
+      .sort('createdAt')
+      .exec();
+
+    res.json(messages);
+  } catch (error) {
+    console.error("Get message history error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

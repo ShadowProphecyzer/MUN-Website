@@ -17,7 +17,7 @@ exports.getAmendments = async (req, res) => {
   }
 };
 
-// Submit a new amendment (delegates only)
+// Submit a new amendment (owners, admins, and delegates can submit)
 exports.submitAmendment = async (req, res) => {
   const { conferenceId } = req.params;
   const userId = req.user._id;
@@ -25,8 +25,14 @@ exports.submitAmendment = async (req, res) => {
 
   try {
     const userRole = await UserConferenceRole.findOne({ user: userId, conference: conferenceId });
-    if (!userRole || userRole.role !== 'delegate') {
-      return res.status(403).json({ message: 'Only delegates can submit amendments' });
+    if (!userRole) {
+      return res.status(403).json({ message: 'User not found in conference' });
+    }
+
+    // Allow owners, admins, and delegates to submit amendments
+    const allowedRoles = ['owner', 'admin', 'delegate'];
+    if (!allowedRoles.includes(userRole.role)) {
+      return res.status(403).json({ message: 'Only owners, admins, and delegates can submit amendments' });
     }
 
     // Check if number/letter/roman numeral combination already exists in this conference

@@ -2,18 +2,16 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const { protect } = require('../middleware/authMiddleware');
-const { roleCheck } = require('../middleware/roleMiddleware');
+const { canManageUsers } = require('../middleware/roleMiddleware');
 const {
   getConferenceData,
   downloadConferenceDataPDF,
 } = require('../controllers/databaseController');
 
-// GET /api/conferences/:conferenceId/data
-// Owners and editors get all conference data JSON
-router.get('/data', protect, roleCheck(['owner', 'editor']), getConferenceData);
+// Get all conference data (only owners and admins)
+router.get('/data', protect, canManageUsers, getConferenceData);
 
-// GET /api/conferences/:conferenceId/data/pdf
-// Owners and editors download conference data as PDF
-router.get('/data/pdf', protect, roleCheck(['owner', 'editor']), downloadConferenceDataPDF);
+// Download conference data as PDF (only owners and admins)
+router.get('/data/pdf', protect, canManageUsers, downloadConferenceDataPDF);
 
 module.exports = router;

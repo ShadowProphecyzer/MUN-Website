@@ -24,18 +24,18 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: 'User already exists with this email' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     const user = await User.create({
       username,
       email,
-      password: hashedPassword,
+      password,
     });
 
     res.status(201).json({
       _id: user._id,
       username: user.username,
       email: user.email,
+      role: user.role,
+      country: user.country,
       token: generateToken(user._id),
     });
   } catch (error) {
@@ -52,17 +52,73 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await user.matchPassword(password);
     if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
 
     res.json({
       _id: user._id,
       username: user.username,
       email: user.email,
+      role: user.role,
+      country: user.country,
       token: generateToken(user._id),
     });
   } catch (error) {
     console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Get current user
+exports.getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('-password');
+    res.json(user);
+  } catch (error) {
+    console.error('Get user error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Make user admin (owner only)
+exports.makeAdmin = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.role = 'admin';
+    await user.save();
+
+    res.json({ 
+      message: 'User role updated to admin successfully',
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error('Make admin error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Get God email (for frontend verification)
+exports.getGodEmail = async (req, res) => {
+  try {
+    const godEmail = process.env.GOD_EMAIL;
+    if (!godEmail) {
+      return res.status(404).json({ message: 'God email not configured' });
+    }
+    
+    res.json({ godEmail });
+  } catch (error) {
+    console.error('Get God email error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };

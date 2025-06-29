@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true }); // to access conferenceId from parent routes
 const { protect } = require('../middleware/authMiddleware');
-const { roleCheck } = require('../middleware/roleMiddleware');
+const { canManageUsers } = require('../middleware/roleMiddleware');
 const {
   getPeopleByConference,
   addOrUpdateUserRole,
@@ -14,11 +14,11 @@ const {
 router.get('/', protect, getPeopleByConference);
 
 // POST /api/conferences/:conferenceId/people
-// Only owner and editors can add or update users' roles
-router.post('/', protect, roleCheck(['owner', 'editor']), addOrUpdateUserRole);
+// Only owners and admins can add or update users' roles
+router.post('/', protect, canManageUsers, addOrUpdateUserRole);
 
 // DELETE /api/conferences/:conferenceId/people/:userId
-// Only owner and editors can remove a user from conference
-router.delete('/:userId', protect, roleCheck(['owner', 'editor']), removeUserFromConference);
+// Only owners and admins can remove a user from conference
+router.delete('/:userId', protect, canManageUsers, removeUserFromConference);
 
 module.exports = router;

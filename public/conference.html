@@ -10,6 +10,19 @@
   <script defer src="js/conference.js" type="module"></script>
 </head>
 <body>
+  <!-- World-Wide Message Popup -->
+  <div id="worldWideMessagePopup" class="world-wide-popup">
+    <div class="world-wide-popup-content">
+      <div class="popup-header">
+        <h2>👑 Words of Enlightenment</h2>
+        <span class="popup-close" onclick="closeWorldWidePopup()">&times;</span>
+      </div>
+      <div class="popup-message" id="worldWideMessageText">
+        <!-- Message will be inserted here -->
+      </div>
+    </div>
+  </div>
+
   <main class="conference-container">
     <h1>Welcome to MUN Conference</h1>
 
@@ -57,5 +70,9 @@
       <div id="joinResult" class="result-msg"></div>
     </section>
   </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/conference.js"></script>
+  <script src="js/worldWideMessage.js"></script>
 </body>
 </html>

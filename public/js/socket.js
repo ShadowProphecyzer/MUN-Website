@@ -16,7 +16,7 @@ function sendMessage(conferenceId, toUserId, content, senderId) {
 socket.on('newMessagePending', (message) => {
   // Show message in moderator approval UI
   console.log('New message pending approval:', message);
-  // You’d update your UI here accordingly
+  // You'd update your UI here accordingly
 });
 
 // Moderator approves message
@@ -107,8 +107,8 @@ socket.on('contributionUpdated', ({ userId, contributionType, value }) => {
   // Update contributions UI
 });
 
-// Export functions for use in your frontend app
-export {
+// Make functions globally available
+window.socketFunctions = {
   joinConference,
   sendMessage,
   approveMessage,
