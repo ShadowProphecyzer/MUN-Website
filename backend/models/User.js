@@ -1,55 +1,145 @@
-// models/User.js
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-const UserSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
     unique: true,
     trim: true,
+    minlength: [3, 'Username must be at least 3 characters long'],
+    maxlength: [30, 'Username cannot exceed 30 characters'],
+    match: [/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores']
   },
   email: {
     type: String,
     required: true,
     unique: true,
-    lowercase: true,
     trim: true,
+    lowercase: true,
+    match: [
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      'Please enter a valid email address'
+    ]
   },
   password: {
     type: String,
     required: true,
+    minlength: [6, 'Password must be at least 6 characters long']
   },
+
   role: {
     type: String,
-    enum: ['owner', 'admin', 'moderator', 'chair', 'delegate'],
-    default: 'delegate',
+    enum: ['user', 'admin', 'moderator'],
+    default: 'user'
   },
-  country: {
-    type: String,
-    default: '', // delegates will have their country assigned
+  isActive: {
+    type: Boolean,
+    default: true
   },
+  lastLogin: {
+    type: Date,
+    default: null
+  },
+  loginAttempts: {
+    type: Number,
+    default: 0
+  },
+  lockUntil: {
+    type: Date,
+    default: null
+  }
 }, {
   timestamps: true,
+  collection: 'users' // Store in 'users' collection
 });
 
-// Password hashing before saving
-UserSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
-    return next();
-  }
+// Index for efficient queries
+userSchema.index({ username: 1 });
+userSchema.index({ email: 1 });
+userSchema.index({ username: 1, email: 1 });
+
+// Pre-save middleware to hash password
+userSchema.pre('save', async function(next) {
+  // Only hash the password if it has been modified (or is new)
+  if (!this.isModified('password')) return next();
+  
   try {
-    const salt = await bcrypt.genSalt(10);
+    // Hash password with salt rounds of 12
+    const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
     next();
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    console.error('Error in user pre-save hook:', error);
+    next(error);
   }
 });
 
-// Method to compare password for login
-UserSchema.methods.matchPassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
+// Instance method to compare password
+userSchema.methods.comparePassword = async function(candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
 };
 
-module.exports = mongoose.model('User', UserSchema);
+// Instance method to check if account is locked
+userSchema.methods.isLocked = function() {
+  return !!(this.lockUntil && this.lockUntil > Date.now());
+};
+
+// Instance method to increment login attempts
+userSchema.methods.incLoginAttempts = function() {
+  // If we have a previous lock that has expired, restart at 1
+  if (this.lockUntil && this.lockUntil < Date.now()) {
+    return this.updateOne({
+      $unset: { lockUntil: 1 },
+      $set: { loginAttempts: 1 }
+    });
+  }
+  
+  const updates = { $inc: { loginAttempts: 1 } };
+  
+  // Lock account after 5 failed attempts for 2 hours
+  if (this.loginAttempts + 1 >= 5 && !this.isLocked()) {
+    updates.$set = { lockUntil: Date.now() + 2 * 60 * 60 * 1000 };
+  }
+  
+  return this.updateOne(updates);
+};
+
+// Static method to reset login attempts
+userSchema.statics.resetLoginAttempts = function(username) {
+  return this.updateOne(
+    { username },
+    { 
+      $unset: { lockUntil: 1, loginAttempts: 1 },
+      $set: { lastLogin: new Date() }
+    }
+  );
+};
+
+// Static method to find user by email or username
+userSchema.statics.findByEmailOrUsername = function(identifier) {
+  return this.findOne({
+    $or: [
+      { email: identifier.toLowerCase() },
+      { username: identifier }
+    ]
+  });
+};
+
+// Virtual for display name
+userSchema.virtual('displayName').get(function() {
+  return this.username;
+});
+
+// Ensure virtual fields are serialized
+userSchema.set('toJSON', {
+  virtuals: true,
+  transform: function(doc, ret) {
+    delete ret.password;
+    delete ret.loginAttempts;
+    delete ret.lockUntil;
+    return ret;
+  }
+});
+
+module.exports = mongoose.model('User', userSchema); 

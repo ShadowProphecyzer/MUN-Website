@@ -1,126 +1,183 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const helmet = require('helmet');
+const path = require('path');
 const http = require('http');
 const socketio = require('socket.io');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const path = require('path');
-const connectDB = require('./config/db');
+require('dotenv').config({ path: './config.env' });
 
-// Load environment variables
-dotenv.config();
-
-// Connect to MongoDB
-connectDB();
+const contactRoutes = require('./routes/contact');
+const authRoutes = require('./routes/auth');
+const conferenceRoutes = require('./routes/conference');
+const emailService = require('./services/emailService');
+const chatRoutes = require('./routes/chat');
+const amendmentRoutes = require('./routes/amendment');
+const votingRoutes = require('./routes/voting');
+const contributionRoutes = require('./routes/contribution');
+const reportRoutes = require('./routes/report');
 
 const app = express();
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join(__dirname, '../public')));
-
-// Routes
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/conference', require('./routes/conferenceRoutes'));
-app.use('/api/people', require('./routes/peopleRoutes'));
-app.use('/api/notes', require('./routes/notesRoutes'));
-app.use('/api/voting', require('./routes/votingRoutes'));
-app.use('/api/amendments', require('./routes/amendmentsRoutes'));
-app.use('/api/contributions', require('./routes/contributionsRoutes'));
-app.use('/api/database', require('./routes/databaseRoutes'));
-
-// Default route
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
-});
-
-// Create HTTP server from express app
 const server = http.createServer(app);
-
-// Setup Socket.IO server
 const io = socketio(server, {
   cors: {
-    origin: '*',  // Update with your frontend URL in production
-    methods: ['GET', 'POST']
+    origin: '*',
+    methods: ['GET', 'POST', 'PATCH', 'DELETE']
   }
 });
-
-// Make io accessible in routes/controllers if needed
 app.set('io', io);
+const PORT = process.env.PORT || 3000;
 
-// Socket.IO connection logic
-io.on('connection', (socket) => {
-  console.log(`New WS connection: ${socket.id}`);
+// Security middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+}));
 
-  // Join conference room
-  socket.on('joinConference', (conferenceId) => {
-    socket.join(conferenceId);
-    console.log(`Socket ${socket.id} joined conference ${conferenceId}`);
-  });
+// CORS configuration - Allow all origins for hosting
+app.use(cors({
+  origin: true, // Allow all origins for hosting
+  credentials: true
+}));
 
-  // Chat message sent (to moderator approval)
-  socket.on('sendMessage', async ({ conferenceId, toUserId, content, senderId }) => {
-    // Here you would save message with approved: false
-    // Then notify moderators for approval (emit to mod room)
-    // Example:
-    io.to(conferenceId).emit('newMessagePending', { toUserId, content, senderId });
-  });
+// Body parsing middleware
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
-  // Moderator approves message
-  socket.on('approveMessage', ({ conferenceId, messageId }) => {
-    // Update message approved flag in DB
-    // Emit approved message to recipient room
-    io.to(conferenceId).emit('chatMessageApproved', { messageId });
-  });
+// Trust proxy for accurate IP addresses
+app.set('trust proxy', 1);
 
-  // Moderator declines message
-  socket.on('declineMessage', ({ conferenceId, messageId, reason }) => {
-    // Update message status with decline and reason
-    io.to(conferenceId).emit('chatMessageDeclined', { messageId, reason });
-  });
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, '../public')));
 
-  // Voting events
-  socket.on('openVoting', ({ conferenceId }) => {
-    io.to(conferenceId).emit('votingStatus', { open: true });
-  });
-  socket.on('closeVoting', ({ conferenceId }) => {
-    io.to(conferenceId).emit('votingStatus', { open: false });
-  });
-  socket.on('castVote', ({ conferenceId, userId, choice }) => {
-    // Store vote in DB, then emit updated tally
-    io.to(conferenceId).emit('voteUpdate', { userId, choice });
-  });
+// API routes
+app.use('/api', contactRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/conference', conferenceRoutes);
+app.use('/api/conference', chatRoutes);
+app.use('/api/conference', amendmentRoutes(io));
+app.use('/api/conference', votingRoutes(io));
+app.use('/api/conference', contributionRoutes(io));
+app.use('/api/conference', reportRoutes);
 
-  // Amendments events
-  socket.on('submitAmendment', ({ conferenceId, amendment }) => {
-    io.to(conferenceId).emit('newAmendment', amendment);
-  });
-  socket.on('amendmentDecision', ({ conferenceId, amendmentId, approved }) => {
-    io.to(conferenceId).emit('amendmentStatusUpdate', { amendmentId, approved });
-  });
-
-  // Contributions updates
-  socket.on('updateContribution', ({ conferenceId, userId, contributionType, value }) => {
-    io.to(conferenceId).emit('contributionUpdated', { userId, contributionType, value });
-  });
-
-  // Leave room on disconnect
-  socket.on('disconnect', () => {
-    console.log(`Socket disconnected: ${socket.id}`);
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({
+    success: true,
+    message: 'MUN Website Backend is running',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
+// Serve the main HTML files
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/homepage.html'));
+});
+
+app.get('/contact_us', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/contact_us.html'));
+});
+
+app.get('/learn', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/learn.html'));
+});
+
+app.get('/signin_signup', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/signin_signup.html'));
+});
+
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/dashboard.html'));
+});
+
+app.get('/profile', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/profile.html'));
 });
 
 // 404 handler
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+app.use('*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Route not found'
+  });
 });
 
-// Start server with Socket.IO
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Global error handler
+app.use((error, req, res, next) => {
+  console.error('Global error handler:', error);
+  res.status(500).json({
+    success: false,
+    message: 'Internal server error',
+    ...(process.env.NODE_ENV === 'development' && { error: error.message })
+  });
+});
+
+// Socket.IO connection
+io.on('connection', (socket) => {
+  // Join a conference room
+  socket.on('joinConference', (conferenceCode, userId) => {
+    socket.join(`conference_${conferenceCode}`);
+    if (userId) {
+      socket.join(`conference_${conferenceCode}_user_${userId}`);
+    }
+  });
+  // Optionally handle disconnects, etc.
+});
+
+// Connect to MongoDB
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('✅ MongoDB connected successfully');
+    console.log('📊 Database: mun_website');
+    console.log('📁 Collections: users, contacts');
+    
+    // Test email service connection
+    await emailService.testConnection();
+    
+  } catch (error) {
+    console.error('❌ MongoDB connection failed:', error.message);
+    process.exit(1);
+  }
+};
+
+// Start server
+const startServer = async () => {
+  await connectDB();
+  
+  server.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📧 Email notifications will be sent to: ${process.env.EMAIL_USER}`);
+    console.log(`🔐 JWT authentication enabled`);
+    console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`📋 Available routes:`);
+    console.log(`   - POST /api/auth/register - User registration`);
+    console.log(`   - POST /api/auth/login - User login`);
+    console.log(`   - POST /api/contact - Contact form submission`);
+    console.log(`   - GET /api/auth/check - Check authentication status`);
+  });
+};
+
+startServer();
+
+const getDelegateIds = async (conferenceCode) => {
+  // Fetch all delegates for the conference
+  const db = require('./services/conferenceDb').getConferenceDb(conferenceCode);
+  const Conference = db.models.Conference;
+  const conf = await Conference.findOne({ code: conferenceCode });
+  if (!conf) return [];
+  return conf.people.filter(p => p.role === 'Delegate').map(p => p._id.toString());
+};
+
+app.use('/conferences', express.static('conferences'));

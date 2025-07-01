@@ -1,0 +1,302 @@
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Open+Sans:wght@400;600&display=swap');
+
+/* Base Styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Open Sans', sans-serif;
+  background-color: #000000; /* Deep black */
+  color: #f5e6c5; /* Light gold text */
+}
+
+/* Header */
+/* === Navbar Container === */
+.main-nav-bar {
+  background-color: #000000;
+  color: #f5e6c5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  /* Fixed height and horizontal padding */
+  height: 60px;
+  padding: 0 3.5rem;
+
+  border-bottom: 1px solid #cba135;
+
+  /* Fixed position like CSS 2 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+
+  z-index: 100;
+  box-sizing: border-box;
+
+  /* Optional subtle shadow for style */
+  box-shadow: 0 2px 5px rgba(203, 161, 53, 0.25);
+}
+
+/* === Navigation Links === */
+.main-nav-links {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+  font-weight: bold;
+  font-size: 1.3rem;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* === Navigation List Items === */
+.main-nav-links li a {
+  color: #f5e6c5;
+  text-decoration: none;
+}
+
+.main-nav-links li a:hover {
+  color: #cba135;
+}
+
+/* Contact Us link */
+.contact_us {
+  font-size: 0.95rem;
+  color: #f5e6c5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.contact_us:hover {
+  color: #cba135;
+}
+
+/* Learn More link */
+.learn-more {
+  font-size: 0.95rem;
+  color: #f5e6c5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  margin-right: 20px;
+}
+
+.learn-more:hover {
+  color: #cba135;
+}
+
+/* Sign In link */
+.sign-in {
+  font-size: 0.95rem;
+  color: #f5e6c5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.sign-in:hover {
+  color: #cba135;
+}
+
+/* === Sign-Up Button === */
+.nav-sign-up-btn {
+  background-color: #cba135;
+  border: none;
+  color: #000000;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.95rem;
+  height: 36px;
+  margin-left: 1.3rem;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.nav-sign-up-btn:hover {
+  background-color: #a87e22;
+}
+
+.learn-more {
+  margin-right: 20px; /* adjust the value as needed */
+}
+
+/* Logo Placeholder */
+.mun-logo {
+  width: 120px;
+  height: 40px;
+  background-image: url('attatchments/logo-placeholder.png'); /* Adjust path */
+  background-size: contain;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  flex-shrink: 0;
+  text-decoration: none;
+  display: block;
+}
+
+/* Additional Options container styling for alignment */
+.additional-options {
+  display: flex;
+  align-items: center;
+}
+
+/* Logo Placeholder */
+.mun-logo {
+  width: 120px;
+  height: 40px;
+  background-image: url('attatchments/logo-placeholder.png'); /* Replace with your logo */
+  background-size: contain;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  text-align: center;
+}
+
+.hero-section img {
+  width: 100%;
+  height: auto;
+  display: block;
+  opacity: 0.9;
+}
+
+.hero-section-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #d6c189;
+  text-shadow: 1px 1px 2px #000;
+}
+
+.hero-section-text p {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  margin: 0.5rem 0;
+}
+
+.hero-section-text h2 {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1.1rem;
+  margin: 1rem 0;
+}
+
+.hero-section-text .hero-signup-btn {
+  background-color: #000000;
+  color: #cba135;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-weight: bold;
+  border-radius: 3px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s ease;
+}
+
+.hero-section-text .hero-signup-btn:hover {
+  background-color: #1a1a1a;
+}
+
+/* Dynamic Category Bar */
+.dynamic-category-bar {
+  background-color: #000000;
+  padding: 1rem 0;
+  border-top: 1px solid #2a2a2a;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.dynamic-category-bar ul {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.category {
+  color: #f5e6c5;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0.3rem;
+}
+
+.category.active {
+  border-bottom: 2px solid #cba135;
+  font-weight: bold;
+}
+
+/* Showcase Section */
+.category-showcase {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 2rem;
+  gap: 2rem;
+  background-color: #000000;
+  border-top: 1px solid #333;
+}
+
+.showcase-description h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: #d6c189;
+  margin-bottom: 0.5rem;
+}
+
+.showcase-description p {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.showcase-description .showcase-signup-btn {
+  background-color: #cba135;
+  color: #000000;
+  padding: 0.6rem 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s ease;
+}
+
+.showcase-description .showcase-signup-btn:hover {
+  background-color: #b8902d;
+}
+
+/* Footer */
+.footer-section {
+  background-color: #000000;
+  color: #f5e6c5;
+  text-align: center;
+  padding: 2rem 1rem;
+  font-size: 0.85rem;
+  border-top: 1px solid #222;
+}
+
+#footer-section-logo {
+  width: 120px;
+  height: auto;
+  margin-bottom: 1rem;
+}
