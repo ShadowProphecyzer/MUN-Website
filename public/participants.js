@@ -12,6 +12,42 @@ function getConferenceCodeFromURL() {
   return params.get('code');
 }
 
+// Check authentication status with automatic token refresh
+async function checkAuthStatus() {
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      console.log('No token found, redirecting to login');
+      window.location.href = 'signin_signup.html';
+      return;
+    }
+    const res = await fetch('/api/auth/check', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (res.ok && data.success && data.authenticated) {
+      console.log('Authentication successful');
+      return;
+    } else {
+      console.log('Authentication failed:', data.message);
+      if (res.status === 401 || res.status === 403) {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+        window.location.href = 'signin_signup.html';
+      }
+    }
+  } catch (error) {
+    console.error('Auth check failed:', error);
+    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      console.log('Network error, keeping current session');
+      return;
+    }
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userData');
+    window.location.href = 'signin_signup.html';
+  }
+}
+
 async function fetchCurrentUser() {
   const res = await fetch('/api/auth/check', {
     headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
@@ -37,6 +73,36 @@ function renderWelcomeMessage() {
   const welcomeElem = document.getElementById('welcomeMessage');
   if (welcomeElem && currentUser) {
     welcomeElem.innerHTML = `Hello, <span id="currentUsername">${currentUser.username}</span>`;
+  }
+}
+
+function showNotParticipantMessage() {
+  const list = document.getElementById('participantsList');
+  const addRow = document.querySelector('.add-participant-row');
+  const returnBtn = document.getElementById('returnConferenceBtn');
+  
+  // Hide participant management controls
+  if (addRow) addRow.style.display = 'none';
+  if (returnBtn) returnBtn.style.display = 'none';
+  
+  // Show not participant message
+  list.innerHTML = `
+    <li class="participant-item error-message">
+      <div class="error-content">
+        <h3>❌ Access Denied</h3>
+        <p>You are not a participant of this conference.</p>
+        <p>Please contact the conference administrator to be added as a participant.</p>
+        <button class="return-dashboard-btn">Return to Dashboard</button>
+      </div>
+    </li>
+  `;
+  
+  // Add event listener to the return dashboard button
+  const returnDashboardBtn = list.querySelector('.return-dashboard-btn');
+  if (returnDashboardBtn) {
+    returnDashboardBtn.addEventListener('click', function() {
+      window.location.href = 'dashboard.html';
+    });
   }
 }
 
@@ -217,9 +283,13 @@ async function addParticipant(email, role, country = '') {
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
+  // Check authentication first
+  await checkAuthStatus();
+  
   conferenceCode = getConferenceCodeFromURL();
   await fetchCurrentUser();
   renderWelcomeMessage();
+  
   // Get current user's role in this conference
   let participants = await fetchParticipants();
   console.log('[DEBUG] All participants from API:', participants);
@@ -234,7 +304,12 @@ document.addEventListener('DOMContentLoaded', async function() {
   console.log('[DEBUG] Current role:', currentRole);
   console.log('[DEBUG] All participants:', participants);
   
-  renderParticipants(participants);
+  // Show participants only if user is authenticated and is a participant
+  if (me) {
+    renderParticipants(participants);
+  } else {
+    showNotParticipantMessage();
+  }
 
   const countrySelect = document.getElementById('addCountrySelect');
   const roleSelect = document.getElementById('addRoleSelect');

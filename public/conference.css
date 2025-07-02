@@ -231,4 +231,52 @@ body {
   .conference-card {
     padding: 1rem;
   }
+}
+
+/* Error message styling */
+.error-message {
+  background-color: rgba(220, 53, 69, 0.1) !important;
+  border: 2px solid #dc3545 !important;
+  border-radius: 10px;
+  padding: 2rem !important;
+  text-align: center;
+  margin: 1rem 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.error-content h3 {
+  color: #dc3545;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-family: 'Playfair Display', serif;
+}
+
+.error-content p {
+  color: #f5e6c5;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.return-dashboard-btn {
+  background: linear-gradient(135deg, #cba135, #d6c189);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.return-dashboard-btn:hover {
+  background: linear-gradient(135deg, #d6c189, #cba135);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(203, 161, 53, 0.3);
 } 

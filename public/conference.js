@@ -30,14 +30,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const reportBtn = document.querySelector('.report-btn');
     if (reportBtn) reportBtn.addEventListener('click', () => alert('Database Report feature coming soon!'));
 
-    // Logout button
-    const logoutBtn = document.querySelector('.logout-btn');
-    if (logoutBtn) logoutBtn.addEventListener('click', logout);
+    // Leave Conference button
+    const leaveConferenceBtn = document.querySelector('.leave-conference-btn');
+    if (leaveConferenceBtn) leaveConferenceBtn.addEventListener('click', leaveConference);
 
-    // Fetch and display conference details after 5 seconds
-    setTimeout(() => {
-        displayConferenceDetails();
-    }, 5000);
+    // Conference details will be fetched after authentication is confirmed
 });
 
 // Fetch and display conference details
@@ -131,13 +128,13 @@ async function checkAuthStatus() {
                 const userEmail = data.user.email.toLowerCase();
                 const isParticipant = participants.some(p => p.email.toLowerCase() === userEmail);
                 if (!isParticipant) {
-                    alert('You are not a participant in this conference.');
-                    window.location.href = 'signin_signup.html';
+                    showNotParticipantMessage();
                     return;
                 }
+                // Fetch conference details immediately after authentication and participant verification
+                displayConferenceDetails();
             } else {
-                alert('Could not verify conference access.');
-                window.location.href = 'signin_signup.html';
+                showNotParticipantMessage();
                 return;
             }
         } else {
@@ -174,9 +171,36 @@ function setupConferenceEvents() {
     });
 }
 
-// Logout function
-function logout() {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userData');
-      window.location.href = 'signin_signup.html';
+// Show not participant message
+function showNotParticipantMessage() {
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+        mainContent.innerHTML = `
+            <section class="welcome-section">
+                <div class="error-message">
+                    <div class="error-content">
+                        <h3>❌ Access Denied</h3>
+                        <p>You are not a participant of this conference.</p>
+                        <p>Please contact the conference administrator to be added as a participant.</p>
+                        <button class="return-dashboard-btn">Return to Dashboard</button>
+                    </div>
+                </div>
+            </section>
+        `;
+        
+        // Add event listener to the return dashboard button
+        const returnDashboardBtn = mainContent.querySelector('.return-dashboard-btn');
+        if (returnDashboardBtn) {
+            returnDashboardBtn.addEventListener('click', function() {
+                window.location.href = 'dashboard.html';
+            });
+        }
+    }
+}
+
+// Leave Conference function
+function leaveConference() {
+    if (confirm('Are you sure you want to leave this conference? You will be redirected to the dashboard.')) {
+        window.location.href = 'dashboard.html';
+    }
 }

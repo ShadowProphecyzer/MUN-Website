@@ -12,6 +12,7 @@ const authRoutes = require('./routes/auth');
 const emailService = require('./services/emailService');
 const conferenceRoutes = require('./routes/conference');
 const participantsRoutes = require('./routes/participants');
+const participantsV2Routes = require('./routes/participantsV2');
 
 const app = express();
 const server = http.createServer(app);
@@ -63,6 +64,7 @@ app.use('/api', contactRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/conference', conferenceRoutes);
 app.use('/api/participants', participantsRoutes);
+app.use('/api/participantsV2', participantsV2Routes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
