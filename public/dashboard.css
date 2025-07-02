@@ -418,6 +418,139 @@ body {
   justify-content: center;
 }
 .dashboard-logout-btn:hover {
-  background-color: #b8902d;
+  background-color: #b8902d !important;
+  color: #000 !important;
+}
+
+/* Conference Code Entry Panel Styles */
+.code-entry-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.code-entry-content {
+  background-color: #111111;
+  border: 2px solid #cba135;
+  border-radius: 15px;
+  padding: 2.5rem;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(203, 161, 53, 0.3);
+}
+
+.code-entry-content h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  color: #d6c189;
+  margin-bottom: 1rem;
+}
+
+.code-entry-content p {
+  font-size: 1rem;
+  color: #f5e6c5;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.code-entry-content input {
+  background-color: #1f1f1f;
+  color: #f5e6c5;
+  border: 1px solid #cba135;
+  padding: 12px 15px;
+  font-size: 1rem;
+  border-radius: 8px;
+  width: 100%;
+  margin-bottom: 1.5rem;
+  outline: none;
+  transition: border-color 0.3s ease;
+  text-align: center;
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+
+.code-entry-content input::placeholder {
+  color: #cba135;
+  opacity: 0.7;
+  letter-spacing: normal;
+  font-weight: normal;
+}
+
+.code-entry-content input:focus {
+  border-color: #d6c189;
+  box-shadow: 0 0 10px rgba(203, 161, 53, 0.3);
+}
+
+.code-entry-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.submit-code-btn, .cancel-code-btn {
+  background-color: #cba135;
   color: #000000;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  min-width: 120px;
+}
+
+.submit-code-btn:hover {
+  background-color: #b8902d;
+}
+
+.cancel-code-btn {
+  background-color: #666666;
+  color: #ffffff;
+}
+
+.cancel-code-btn:hover {
+  background-color: #555555;
+}
+
+#codeEntryMessage {
+  font-size: 0.9rem;
+  font-weight: bold;
+  border-radius: 8px;
+}
+
+#codeEntryMessage.success {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+  border: 1px solid #4caf50;
+}
+
+#codeEntryMessage.error {
+  background-color: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+  border: 1px solid #f44336;
+}
+
+@media (max-width: 480px) {
+  .code-entry-content {
+    padding: 2rem;
+    margin: 1rem;
+  }
+  
+  .code-entry-buttons {
+    flex-direction: column;
+  }
+  
+  .submit-code-btn, .cancel-code-btn {
+    width: 100%;
+  }
 }

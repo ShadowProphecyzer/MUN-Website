@@ -1,0 +1,381 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Open+Sans:wght@400;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Open Sans', sans-serif;
+}
+
+body {
+  background: linear-gradient(to right, #1a1a1a, #000000);
+  color: #f5e6c5;
+  min-height: 100vh;
+  padding-top: 60px;
+}
+
+.main-nav-bar {
+  background-color: #000000;
+  color: #f5e6c5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 3.5rem;
+  border-bottom: 1px solid #cba135;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  z-index: 100;
+  box-sizing: border-box;
+  box-shadow: 0 2px 5px rgba(203, 161, 53, 0.25);
+}
+
+.contact_us {
+  font-size: 0.95rem;
+  color: #f5e6c5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.contact_us:hover {
+  color: #cba135;
+}
+
+.mun-logo {
+  width: 120px;
+  height: 40px;
+  background-image: url('attatchments/logo-placeholder.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+}
+
+.additional-options {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.additional-options a {
+  font-size: 0.95rem;
+  color: #f5e6c5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.additional-options a:hover {
+  color: #cba135;
+}
+
+.user-menu {
+  color: #cba135 !important;
+  font-weight: bold;
+}
+
+.participants-section {
+  max-width: 700px;
+  margin: 4rem auto 0 auto;
+  padding: 2rem 0;
+}
+
+.participants-section h1 {
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  color: #d6c189;
+  margin-bottom: 2rem;
+  text-shadow: 1px 1px 2px #000;
+}
+
+.participants-card {
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 15px;
+  border: 1px solid #cba135;
+  box-shadow: 0 10px 30px rgba(203, 161, 53, 0.12);
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.participants-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.participants-header h2 {
+  font-size: 1.3rem;
+  color: #d6c189;
+  font-family: 'Playfair Display', serif;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #cba135;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.close-btn:hover {
+  color: #fff;
+}
+
+.large-panel {
+  max-width: 1000px;
+  min-height: 600px;
+  padding: 3rem 2rem 2rem 2rem;
+}
+
+.panel-title {
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  color: #d6c189;
+  margin-bottom: 1.2rem;
+  text-shadow: 1px 1px 2px #000;
+}
+
+.welcome-message {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #cba135;
+  margin-bottom: 1.5rem;
+  font-weight: bold;
+}
+
+.add-participant-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+#addParticipantInput {
+  background: #181818;
+  color: #cba135;
+  border: 1.5px solid #cba135;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: border-color 0.3s;
+  min-width: 220px;
+}
+
+#addRoleSelect, #addCountrySelect.country-select {
+  background: #181818;
+  color: #cba135;
+  border: 1.5px solid #cba135;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: border-color 0.3s;
+  min-width: 170px;
+  height: 44px;
+  box-sizing: border-box;
+}
+#addRoleSelect:focus, #addCountrySelect.country-select:focus {
+  outline: none;
+  border-color: #d6c189;
+}
+
+#addCountrySelect.country-select {
+  margin-left: 0;
+}
+
+#addParticipantBtn {
+  background: #cba135;
+  color: #181818;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  height: 44px;
+  margin-left: 0;
+}
+#addParticipantBtn:hover {
+  background: #d6c189;
+  color: #181818;
+}
+
+/* Remove get-link-section styles */
+.get-link-section, #getLink, #copyLinkBtn, #linkAccessSelect {
+  display: none !important;
+}
+
+/* Make participants-list more prominent */
+.participants-list {
+  margin-top: 1.5rem;
+  background: rgba(0,0,0,0.5);
+  border-radius: 10px;
+  padding: 1rem 0.5rem;
+  min-height: 200px;
+}
+
+.participant-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid #333;
+}
+
+.participant-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #cba135, #e6c866);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #000;
+}
+
+.participant-info {
+  flex: 1;
+}
+
+.participant-name {
+  font-weight: bold;
+  color: #d6c189;
+}
+
+.participant-email {
+  font-size: 0.95rem;
+  color: #f5e6c5;
+}
+
+.role-dropdown, .country-dropdown {
+  padding: 0.3rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid #cba135;
+  background: #181818;
+  color: #f5e6c5;
+  font-size: 0.95rem;
+  margin-left: 0.5rem;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: #cba135;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  transition: color 0.2s;
+}
+.remove-btn:hover {
+  color: #ff4d4d;
+}
+.remove-btn.disabled {
+  color: #666;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.remove-btn.disabled:hover {
+  color: #666;
+}
+
+.return-conference-btn {
+  background-color: #cba135;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 2rem;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin: 1.5rem auto 0 auto;
+  display: block;
+  transition: background-color 0.3s;
+  box-shadow: 0 2px 8px rgba(203,161,53,0.18);
+}
+.return-conference-btn:hover {
+  background-color: #b8902d;
+  color: #000;
+}
+
+.footer-section {
+  text-align: center;
+  padding: 2rem 0 1rem 0;
+  color: #cba135;
+  font-size: 1rem;
+  border-top: 1px solid #cba135;
+  margin-top: 4rem;
+}
+
+.logout-btn, .participants-logout-btn {
+  background-color: #cba135 !important;
+  color: #000 !important;
+  font-weight: bold;
+  border-radius: 8px;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  transition: background-color 0.3s;
+}
+
+.logout-btn:hover, .participants-logout-btn:hover {
+  background-color: #b8902d !important;
+  color: #000 !important;
+}
+
+@media (max-width: 768px) {
+  .main-nav-bar {
+    padding: 0 1rem;
+  }
+  .main-content {
+    padding: 1rem;
+  }
+  .participants-section h1 {
+    font-size: 1.5rem;
+  }
+  .participants-card {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 800px) {
+  .participants-card.large-panel {
+    max-width: 98vw;
+    min-width: unset;
+  }
+}
+
+@media (max-width: 1000px) {
+  .participants-card.large-panel {
+    max-width: 98vw;
+    min-width: unset;
+  }
+}
+
+@media (max-width: 1100px) {
+  .participants-card.large-panel {
+    max-width: 99vw;
+    min-width: unset;
+  }
+  .add-participant-row {
+    flex-wrap: wrap;
+  }
+} 

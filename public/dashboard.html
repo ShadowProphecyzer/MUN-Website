@@ -50,7 +50,7 @@
 
             <div class="dashboard-card">
                 <h3>Join Committee</h3>
-                <p>Create our own committee and invite others to join</p>
+                <p>Enter a conference code to join an existing committee</p>
                 <button class="join-committees-btn dashboard-action-btn">Join Committees</button>
             </div>
             
@@ -131,7 +131,23 @@
         </div>
     </div>
 
-    <!--Part 8: Footer Section-->
+    <!--Part 8: Conference Code Entry Panel-->
+    <div id="codeEntryPanel" class="code-entry-panel" style="display: none;">
+        <div class="code-entry-content">
+            <h2>Join Committee</h2>
+            <p>Enter the conference code to join a committee:</p>
+            <form id="codeEntryForm">
+                <input type="text" id="conferenceCode" placeholder="Enter 12-digit conference code" maxlength="12" required>
+                <div class="code-entry-buttons">
+                    <button type="submit" class="submit-code-btn">Join Committee</button>
+                    <button type="button" class="cancel-code-btn">Cancel</button>
+                </div>
+            </form>
+            <div id="codeEntryMessage" style="display: none; margin-top: 15px; padding: 10px; border-radius: 8px; text-align: center;"></div>
+        </div>
+    </div>
+
+    <!--Part 9: Footer Section-->
     <footer class="footer-section">
         <p>&copy; All Rights Reserved.</p>
     </footer>

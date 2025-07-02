@@ -77,18 +77,25 @@ userSchema.pre('save', async function(next) {
 
 // Instance method to compare password
 userSchema.methods.comparePassword = async function(candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
+  console.log('[DEBUG] Comparing password for user:', this.username);
+  const result = await bcrypt.compare(candidatePassword, this.password);
+  console.log('[DEBUG] Password comparison result:', result);
+  return result;
 };
 
 // Instance method to check if account is locked
 userSchema.methods.isLocked = function() {
-  return !!(this.lockUntil && this.lockUntil > Date.now());
+  const locked = !!(this.lockUntil && this.lockUntil > Date.now());
+  console.log('[DEBUG] Account lock check for user:', this.username, 'locked:', locked);
+  return locked;
 };
 
 // Instance method to increment login attempts
 userSchema.methods.incLoginAttempts = function() {
+  console.log('[DEBUG] Incrementing login attempts for user:', this.username, 'current attempts:', this.loginAttempts);
   // If we have a previous lock that has expired, restart at 1
   if (this.lockUntil && this.lockUntil < Date.now()) {
+    console.log('[DEBUG] Previous lock expired, restarting attempts at 1');
     return this.updateOne({
       $unset: { lockUntil: 1 },
       $set: { loginAttempts: 1 }
@@ -99,6 +106,7 @@ userSchema.methods.incLoginAttempts = function() {
   
   // Lock account after 5 failed attempts for 2 hours
   if (this.loginAttempts + 1 >= 5 && !this.isLocked()) {
+    console.log('[DEBUG] Locking account due to too many failed attempts');
     updates.$set = { lockUntil: Date.now() + 2 * 60 * 60 * 1000 };
   }
   
@@ -107,6 +115,7 @@ userSchema.methods.incLoginAttempts = function() {
 
 // Static method to reset login attempts
 userSchema.statics.resetLoginAttempts = function(username) {
+  console.log('[DEBUG] Resetting login attempts for user:', username);
   return this.updateOne(
     { username },
     { 
@@ -118,6 +127,7 @@ userSchema.statics.resetLoginAttempts = function(username) {
 
 // Static method to find user by email or username
 userSchema.statics.findByEmailOrUsername = function(identifier) {
+  console.log('[DEBUG] Finding user by identifier:', identifier);
   return this.findOne({
     $or: [
       { email: identifier.toLowerCase() },

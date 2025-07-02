@@ -9,13 +9,9 @@ require('dotenv').config({ path: './config.env' });
 
 const contactRoutes = require('./routes/contact');
 const authRoutes = require('./routes/auth');
-const conferenceRoutes = require('./routes/conference');
 const emailService = require('./services/emailService');
-const chatRoutes = require('./routes/chat');
-const amendmentRoutes = require('./routes/amendment');
-const votingRoutes = require('./routes/voting');
-const contributionRoutes = require('./routes/contribution');
-const reportRoutes = require('./routes/report');
+const conferenceRoutes = require('./routes/conference');
+const participantsRoutes = require('./routes/participants');
 
 const app = express();
 const server = http.createServer(app);
@@ -54,6 +50,11 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 // Trust proxy for accurate IP addresses
 app.set('trust proxy', 1);
 
+// Serve conference.html for /conference.html (must be above static middleware)
+app.get('/conference.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/conference.html'));
+});
+
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, '../public')));
 
@@ -61,11 +62,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use('/api', contactRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/conference', conferenceRoutes);
-app.use('/api/conference', chatRoutes);
-app.use('/api/conference', amendmentRoutes(io));
-app.use('/api/conference', votingRoutes(io));
-app.use('/api/conference', contributionRoutes(io));
-app.use('/api/conference', reportRoutes);
+app.use('/api/participants', participantsRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

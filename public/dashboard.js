@@ -1,5 +1,3 @@
-console.log('dashboard.js loaded');
-
 // Dashboard page JavaScript
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Dashboard page loaded successfully');
@@ -9,6 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add event listeners for dashboard functions
     setupDashboardEvents();
+
+    // Setup code entry panel events
+    setupCodeEntryPanel();
 
     // Dashboard main card buttons
     const createBtn = document.querySelector('.create-committees-btn');
@@ -209,40 +210,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function handleConferenceSubmit(e) {
     e.preventDefault();
-    
     clearErrors();
-    
     const formData = {
-        conferenceName: document.getElementById('conferenceName').value.trim(),
+        name: document.getElementById('conferenceName').value.trim(),
         committeeName: document.getElementById('committeeName').value.trim(),
         committeeIssue: document.getElementById('committeeIssue').value.trim()
     };
-    
     // Basic validation
     let hasErrors = false;
-    
-    if (!formData.conferenceName) {
+    if (!formData.name) {
         showError('conferenceNameError', 'Conference name is required');
         hasErrors = true;
     }
-    
     if (!formData.committeeName) {
         showError('committeeNameError', 'Committee name is required');
         hasErrors = true;
     }
-    
     if (!formData.committeeIssue) {
         showError('committeeIssueError', 'Committee issue is required');
         hasErrors = true;
     }
-    
     if (hasErrors) {
         return;
     }
-    
     // Show loading step
     showStep(3);
-    
     try {
         const token = localStorage.getItem('authToken');
         const response = await fetch('/api/conference/create', {
@@ -253,16 +245,12 @@ async function handleConferenceSubmit(e) {
             },
             body: JSON.stringify(formData)
         });
-        
         const data = await response.json();
-        
         if (response.ok && data.success) {
             // Conference created successfully
             hideConferenceModal();
-            
-            // Redirect to conference page
-            window.location.href = `conference.html?code=${data.data.conference.conferenceCode}`;
-            
+            // Redirect to new conference page
+            window.location.href = `conference.html?code=${data.data.code}`;
         } else {
             // Handle validation errors
             if (data.errors) {
@@ -276,11 +264,9 @@ async function handleConferenceSubmit(e) {
             } else {
                 alert(data.message || 'Failed to create conference');
             }
-            
             // Go back to form step
             showStep(2);
         }
-        
     } catch (error) {
         console.error('Conference creation error:', error);
         alert('Network error. Please try again.');
@@ -303,7 +289,7 @@ function logout() {
 }
 
 function joinCommittees() {
-    alert('Join Committees functionality is not yet implemented.');
+    showCodeEntryPanel();
 }
 
 function viewCommittees() {
@@ -316,6 +302,172 @@ function viewConferences() {
 
 function viewResources() {
     alert('View Resources functionality is not yet implemented.');
+}
+
+// Conference Code Entry Panel Functions
+function setupCodeEntryPanel() {
+    const codeEntryForm = document.getElementById('codeEntryForm');
+    const cancelBtn = document.querySelector('.cancel-code-btn');
+    const codeInput = document.getElementById('conferenceCode');
+
+    if (codeEntryForm) {
+        codeEntryForm.addEventListener('submit', handleCodeSubmission);
+    }
+
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', hideCodeEntryPanel);
+    }
+
+    if (codeInput) {
+        // Only allow digits
+        codeInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // Handle Enter key
+        codeInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleCodeSubmission(e);
+            }
+        });
+    }
+
+    // Add Escape key to close panel
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const panel = document.getElementById('codeEntryPanel');
+            if (panel && panel.style.display === 'flex') {
+                hideCodeEntryPanel();
+            }
+        }
+    });
+}
+
+// Show the code entry panel
+function showCodeEntryPanel() {
+    const panel = document.getElementById('codeEntryPanel');
+    const codeInput = document.getElementById('conferenceCode');
+    const messageDiv = document.getElementById('codeEntryMessage');
+    
+    if (panel) {
+        panel.style.display = 'flex';
+        // Clear previous messages
+        if (messageDiv) {
+            messageDiv.style.display = 'none';
+            messageDiv.className = '';
+            messageDiv.textContent = '';
+        }
+        // Focus on input
+        if (codeInput) {
+            codeInput.value = '';
+            codeInput.focus();
+        }
+        
+        // Add click outside to close functionality
+        panel.addEventListener('click', function(e) {
+            if (e.target === panel) {
+                hideCodeEntryPanel();
+            }
+        });
+    }
+}
+
+// Hide the code entry panel
+function hideCodeEntryPanel() {
+    const panel = document.getElementById('codeEntryPanel');
+    if (panel) {
+        panel.style.display = 'none';
+    }
+}
+
+// Handle code submission
+async function handleCodeSubmission(event) {
+    event.preventDefault();
+    
+    const codeInput = document.getElementById('conferenceCode');
+    const messageDiv = document.getElementById('codeEntryMessage');
+    const submitBtn = document.querySelector('.submit-code-btn');
+    
+    if (!codeInput || !messageDiv || !submitBtn) return;
+    
+    const code = codeInput.value.trim();
+    
+    // Basic validation
+    if (!code) {
+        showMessage('Please enter a conference code.', 'error');
+        return;
+    }
+    
+    if (!/^\d{12}$/.test(code)) {
+        showMessage('Conference code must be exactly 12 digits.', 'error');
+        return;
+    }
+    
+    // Disable submit button and show loading
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Validating...';
+    
+    try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch('/api/conference/validate-code', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ code })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            showMessage(`Successfully joined ${data.data.name} - ${data.data.committeeName}!`, 'success');
+            // Redirect to the conference page after a short delay
+            setTimeout(() => {
+                window.location.href = `conference.html?code=${code}`;
+            }, 2000);
+        } else {
+            showMessage(data.message || 'Failed to join conference.', 'error');
+            // Start 3-second cooldown with countdown
+            startCooldown(submitBtn, 3);
+        }
+    } catch (error) {
+        console.error('Code validation error:', error);
+        showMessage('Network error. Please try again.', 'error');
+        // Start 3-second cooldown with countdown
+        startCooldown(submitBtn, 3);
+    }
+}
+
+// Start cooldown with countdown timer
+function startCooldown(button, seconds) {
+    let remaining = seconds;
+    button.disabled = true;
+    
+    const countdown = setInterval(() => {
+        remaining--;
+        if (remaining > 0) {
+            button.textContent = `Try again in ${remaining}s`;
+        } else {
+            clearInterval(countdown);
+            button.disabled = false;
+            button.textContent = 'Join Committee';
+        }
+    }, 1000);
+    
+    // Initial display
+    button.textContent = `Try again in ${remaining}s`;
+}
+
+// Show message in the panel
+function showMessage(message, type) {
+    const messageDiv = document.getElementById('codeEntryMessage');
+    if (messageDiv) {
+        messageDiv.textContent = message;
+        messageDiv.className = type;
+        messageDiv.style.display = 'block';
+    }
 }
 
 window.createCommittees = createCommittees;

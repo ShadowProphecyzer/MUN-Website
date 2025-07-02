@@ -13,8 +13,10 @@ router.post('/register',
   registerValidation,
   validateRequest,
   async (req, res) => {
+    console.log('[DEBUG] Entered /api/auth/register endpoint');
     try {
       const { username, email, password } = req.body;
+      console.log('[DEBUG] Registration request - username:', username, 'email:', email);
       
       // Create new user
       const user = new User({
@@ -22,12 +24,13 @@ router.post('/register',
         email,
         password
       });
-      console.log('Attempting to save new user:', { username, email });
+      console.log('[DEBUG] Attempting to save new user:', { username, email });
       await user.save();
-      console.log('User saved successfully:', user._id);
+      console.log('[DEBUG] User saved successfully:', user._id);
       
       // Generate JWT token
       const token = generateToken(user._id, user.username, user.role);
+      console.log('[DEBUG] JWT token generated for user:', user._id);
       
       res.status(201).json({
         success: true,
@@ -45,11 +48,12 @@ router.post('/register',
       });
       
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('[DEBUG] Registration error:', error);
       
       if (error.code === 11000) {
         const field = Object.keys(error.keyPattern)[0];
         const message = field === 'username' ? 'Username already exists' : 'Email already registered';
+        console.log('[DEBUG] Duplicate field error:', field);
         return res.status(409).json({
           success: false,
           message
@@ -70,13 +74,17 @@ router.post('/login',
   loginValidation,
   validateRequest,
   async (req, res) => {
+    console.log('[DEBUG] Entered /api/auth/login endpoint');
     try {
       const { identifier, password } = req.body;
+      console.log('[DEBUG] Login request - identifier:', identifier);
       
       // Find user by email or username
       const user = await User.findByEmailOrUsername(identifier);
+      console.log('[DEBUG] User found for login:', user ? { id: user._id, username: user.username, email: user.email } : 'Not found');
       
       if (!user) {
+        console.log('[DEBUG] User not found for login');
         return res.status(401).json({
           success: false,
           message: 'Invalid email/username or password'
@@ -86,6 +94,7 @@ router.post('/login',
       // Check if account is locked
       if (user.isLocked()) {
         const lockTime = Math.ceil((user.lockUntil - Date.now()) / (1000 * 60));
+        console.log('[DEBUG] Account is locked, lock time remaining:', lockTime, 'minutes');
         return res.status(423).json({
           success: false,
           message: `Account is locked. Try again in ${lockTime} minutes.`
@@ -94,6 +103,7 @@ router.post('/login',
       
       // Check if account is active
       if (!user.isActive) {
+        console.log('[DEBUG] Account is deactivated');
         return res.status(401).json({
           success: false,
           message: 'Account is deactivated. Please contact support.'
@@ -101,10 +111,14 @@ router.post('/login',
       }
       
       // Verify password
+      console.log('[DEBUG] About to verify password');
       const isPasswordValid = await user.comparePassword(password);
+      console.log('[DEBUG] Password validation result:', isPasswordValid);
+      
       if (!isPasswordValid) {
         // Increment login attempts
         await user.incLoginAttempts();
+        console.log('[DEBUG] Password invalid, incremented login attempts');
         
         const remainingAttempts = 5 - (user.loginAttempts + 1);
         const message = remainingAttempts > 0 
@@ -119,9 +133,11 @@ router.post('/login',
       
       // Reset login attempts on successful login
       await User.resetLoginAttempts(user.username);
+      console.log('[DEBUG] Password valid, reset login attempts');
       
       // Generate JWT token
       const token = generateToken(user._id, user.username, user.role);
+      console.log('[DEBUG] JWT token generated for successful login:', user._id);
       
       res.status(200).json({
         success: true,
@@ -139,7 +155,7 @@ router.post('/login',
       });
       
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('[DEBUG] Login error:', error);
       res.status(500).json({
         success: false,
         message: 'Login failed. Please try again.'

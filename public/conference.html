@@ -1,255 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!--Part 1: Meta Tags-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!--Part 2: Webpage Title-->
     <title>Conference - MUN Website</title>
-
-    <!--Part 3: Default Cascading Style Sheets-->
     <link id="stylesheet" rel="stylesheet" href="conference.css">
-
-    <!--Part 4: Default Javascript-->
-    <script defer src="conference.js"></script>
+    <script src="conference.js"></script>
 </head>
 <body>
-    <!--Part 5: Main Navigation Bar-->
     <header class="main-nav-bar">
-        <!--Part 5.1: Contact Us Navigation -->
         <a href="contact_us.html" class="contact_us">☎ Contact Us</a>
-
-        <!--Part 5.2: MUN Logo-->
         <a href="homepage.html" class="mun-logo"></a>
-
-        <!--Part 5.3: Additional Options-->
         <div class="additional-options">
-            <!--Part 5.3.1: Learn More Navigation-->
             <a href="learn.html" class="learn-more">Learn More</a>
-            
-            <!--Part 5.3.2: Dashboard Navigation-->
-            <a href="dashboard.html" class="dashboard-link">Dashboard</a>
-            
-            <!--Part 5.3.3: Profile Navigation-->
-            <a href="profile.html" class="profile-link">Profile</a>
-            
-            <!--Part 5.3.4: Logout Navigation-->
-            <a href="#" class="logout-btn" id="logoutBtn">Logout</a>
+            <span class="user-menu" id="userMenu">Welcome, <span id="userName">User</span></span>
+            <button class="logout-btn conference-logout-btn">Logout</button>
         </div>
-    </header> 
-    
+    </header>
     <main class="main-content">
         <section class="welcome-section">
-            <h1>Conference Dashboard</h1>
-            <p>Manage your conference, participants, and activities below.</p>
+            <h1>Welcome to Conference: <span id="conferenceName">[Conference Name]</span></h1>
+            <h2 id="committeeName" style="color:#cba135; margin-top: 0.5rem;">[Committee Name]</h2>
+            <p id="committeeIssue" style="color:#f5e6c5; margin-top: 1rem; font-size: 1.1rem; max-width: 800px; margin-left: auto; margin-right: auto;">[Committee Issue]</p>
         </section>
-        <section class="conference-section">
-            <div class="conference-container dashboard-card" style="background-color:rgba(0,0,0,0.5);border:1px solid #cba135;border-radius:15px;box-shadow:0 10px 30px rgba(203,161,53,0.12);padding:2rem;">
-                <!-- Tab Navigation -->
-                <div class="tab-nav">
-                    <button class="tab-btn active" id="detailsTabBtn">Details</button>
-                    <button class="tab-btn" id="peopleTabBtn">People</button>
-                    <button class="tab-btn" id="chatTabBtn">Chat</button>
-                    <button class="tab-btn" id="amendmentsTabBtn">Amendments</button>
-                    <button class="tab-btn" id="votingTabBtn">Voting</button>
-                    <button class="tab-btn" id="contributionsTabBtn">Contributions</button>
-                    <button class="tab-btn" id="reportTabBtn">Conference Report</button>
-                </div>
-                <!-- Tab Content -->
-                <div class="tab-content" id="detailsTab">
-                    <!-- Existing Details Content -->
-                    <div class="conference-header">
-                        <h1>Conference Details</h1>
-                        <p>Your conference has been created successfully!</p>
-                    </div>
-                    <div class="conference-content">
-                        <div class="info-panel">
-                            <div class="info-group">
-                                <label>Conference Name</label>
-                                <p id="conferenceName">Loading...</p>
-                            </div>
-                            <div class="info-group">
-                                <label>Committee Name</label>
-                                <p id="committeeName">Loading...</p>
-                            </div>
-                            <div class="info-group">
-                                <label>Committee Issue</label>
-                                <p id="committeeIssue">Loading...</p>
-                            </div>
-                            <div class="info-group">
-                                <label>Conference Code</label>
-                                <p id="conferenceCode" class="conference-code">Loading...</p>
-                            </div>
-                            <div class="info-group">
-                                <label>Created By</label>
-                                <p id="createdBy">Loading...</p>
-                            </div>
-                            <div class="info-group">
-                                <label>Created On</label>
-                                <p id="createdOn">Loading...</p>
-                            </div>
-                        </div>
-                        <div class="conference-actions">
-                            <button class="copy-code-btn" id="copyCodeBtn">Copy Conference Code</button>
-                            <button class="back-to-dashboard-btn" id="backToDashboardBtn">Back to Dashboard</button>
-                            <button class="create-another-btn" id="createAnotherBtn">Create Another Conference</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-content" id="peopleTab" style="display:none;">
-                    <div class="people-header">
-                        <h2>People Management</h2>
-                        <p>View and manage all participants in this conference.</p>
-                        <button class="btn-primary" id="addPersonBtn" style="display:none;">Add Person</button>
-                    </div>
-                    <div id="peopleListContainer">
-                        <!-- People list will be rendered here -->
-                    </div>
-                </div>
-                <div class="tab-content" id="chatTab" style="display:none;">
-                    <div class="chat-header">
-                        <h2>Conference Chat</h2>
-                        <div class="chat-notification">
-                            <span id="chatBell" class="chat-bell">🔔</span>
-                            <span id="chatNotifCount" class="notif-count" style="display:none;">0</span>
-                        </div>
-                    </div>
-                    <div class="chat-main">
-                        <div class="chat-sidebar" id="chatSidebar">
-                            <!-- List of people to chat with -->
-                        </div>
-                        <div class="chat-window" id="chatWindow">
-                            <div class="chat-messages" id="chatMessages"></div>
-                            <form id="chatForm" class="chat-form">
-                                <input type="text" id="chatInput" placeholder="Type your message..." autocomplete="off" required />
-                                <button type="submit" class="btn-primary">Send</button>
-                            </form>
-                        </div>
-                        <div class="chat-moderator-panel" id="moderatorPanel" style="display:none;">
-                            <h3>Pending Messages</h3>
-                            <div id="pendingMessages"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-content" id="amendmentsTab" style="display:none;">
-                    <div class="amendments-header">
-                        <h2>Amendments</h2>
-                        <div class="amendment-notification">
-                            <span id="amendmentBell" class="amendment-bell">🔔</span>
-                            <span id="amendmentNotifCount" class="notif-count" style="display:none;">0</span>
-                        </div>
-                    </div>
-                    <div id="amendmentsList"></div>
-                    <form id="amendmentForm" style="display:none;" class="amendment-form">
-                        <div class="form-row">
-                            <label>Resolution Number <input type="number" id="resolutionNumber" min="1" required></label>
-                            <label>Clause Number <input type="number" id="clauseNumber" min="1" required></label>
-                            <label>Subclause <input type="text" id="subclause" maxlength="1" pattern="[A-Z]" placeholder="A-Z"></label>
-                            <label>Sub-sub Clause <input type="text" id="subSubClause" placeholder="Roman numeral or N/A"></label>
-                        </div>
-                        <div class="form-row">
-                            <label>Type
-                                <select id="amendmentType" required>
-                                    <option value="">Select</option>
-                                    <option value="Add">Add</option>
-                                    <option value="Modify">Modify</option>
-                                    <option value="Strike">Strike</option>
-                                </select>
-                            </label>
-                        </div>
-                        <div class="form-row">
-                            <label>Content <textarea id="amendmentContent" required></textarea></label>
-                        </div>
-                        <div class="form-row">
-                            <button type="submit" class="btn-primary">Submit Amendment</button>
-                            <button type="button" id="cancelAmendment" class="btn-secondary">Cancel</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="tab-content" id="votingTab" style="display:none;">
-                    <div class="voting-header">
-                        <h2>Voting</h2>
-                        <div class="voting-notification">
-                            <span id="votingBell" class="voting-bell">🗳️</span>
-                            <span id="votingNotifCount" class="notif-count" style="display:none;">0</span>
-                        </div>
-                    </div>
-                    <div id="votingMenu"></div>
-                    <div id="votingResults" style="display:none;"></div>
-                </div>
-                <div class="tab-content" id="contributionsTab" style="display:none;">
-                    <div class="contributions-header">
-                        <h2>Contributions</h2>
-                    </div>
-                    <div id="contributionsTable"></div>
-                    <div id="awardsCards"></div>
-                </div>
-                <div class="tab-content" id="reportTab" style="display:none;">
-                    <div class="report-header">
-                        <h2>Conference Reports</h2>
-                    </div>
-                    <div id="reportSection"></div>
-                </div>
+        <section class="conference-grid">
+            <div class="conference-card">
+                <h3>Participants</h3>
+                <p>View and manage all participants in this conference.</p>
+                <button class="participants-btn conference-action-btn">Manage Participants</button>
+            </div>
+            <div class="conference-card">
+                <h3>Amendments</h3>
+                <p>Propose and review amendments for the conference.</p>
+                <button class="amendments-btn conference-action-btn">View Amendments</button>
+            </div>
+            <div class="conference-card">
+                <h3>Voting</h3>
+                <p>Participate in and view voting sessions.</p>
+                <button class="voting-btn conference-action-btn">Go to Voting</button>
+            </div>
+            <div class="conference-card">
+                <h3>Note Passing</h3>
+                <p>Send and receive notes during the conference.</p>
+                <button class="note-passing-btn conference-action-btn">Open Note Passing</button>
+            </div>
+            <div class="conference-card">
+                <h3>Contributions and Awards</h3>
+                <p>Track contributions and view awards.</p>
+                <button class="contributions-btn conference-action-btn">View Contributions & Awards</button>
+            </div>
+            <div class="conference-card">
+                <h3>Database Report</h3>
+                <p>Generate and download conference reports.</p>
+                <button class="report-btn conference-action-btn">Get Report</button>
             </div>
         </section>
     </main>
-
-    <!--Part 7: Loading Overlay-->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
-        <p>Loading conference details...</p>
-    </div>
-
-    <!--Part 8: Error Message Container-->
-    <div class="error-container" id="errorContainer" style="display: none;">
-        <div class="error-message">
-            <h3>Conference Not Found</h3>
-            <p>The conference you're looking for doesn't exist or you don't have access to it.</p>
-            <button onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
-        </div>
-    </div>
-
-    <!--Part 9: Success Message Container-->
-    <div class="success-container" id="successContainer" style="display: none;">
-        <div class="success-message">
-            <h3>Conference Code Copied!</h3>
-            <p>The conference code has been copied to your clipboard.</p>
-        </div>
-    </div>
-
-    <!-- Add/Edit Person Modal -->
-    <div class="modal-overlay" id="personModal" style="display:none;">
-        <div class="modal-container">
-            <form id="personForm">
-                <h2 id="personModalTitle">Add Person</h2>
-                <div class="form-group">
-                    <label for="personEmail">Email</label>
-                    <input type="email" id="personEmail" name="personEmail" required placeholder="Enter user email">
-                    <span class="error-message" id="personEmailError"></span>
-                </div>
-                <div class="form-group">
-                    <label for="personRole">Role</label>
-                    <select id="personRole" name="personRole" required>
-                        <option value="delegate">Delegate</option>
-                        <option value="chair">Chair</option>
-                        <option value="moderator">Moderator</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                    <span class="error-message" id="personRoleError"></span>
-                </div>
-                <div class="form-group" id="countryGroup" style="display:none;">
-                    <label for="personCountry">Country (for Delegates)</label>
-                    <input type="text" id="personCountry" name="personCountry" placeholder="Type to search...">
-                    <div id="countryDropdown" class="dropdown-list"></div>
-                    <span class="error-message" id="personCountryError"></span>
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" class="btn-secondary" id="cancelPersonBtn">Cancel</button>
-                    <button type="submit" class="btn-primary" id="submitPersonBtn">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <footer class="footer-section">
+        <p>&copy; All Rights Reserved.</p>
+    </footer>
 </body>
 </html> 
