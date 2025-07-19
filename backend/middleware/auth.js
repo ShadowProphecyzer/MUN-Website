@@ -82,9 +82,12 @@ function requireRole(roles) {
   };
 }
 
+const requireAuth = authenticateToken;
+
 module.exports = {
   generateToken,
   authenticateToken,
   isAuthenticated,
-  requireRole
+  requireRole,
+  requireAuth
 };

@@ -14,6 +14,7 @@ const conferenceRoutes = require('./routes/conference');
 const participantsRoutes = require('./routes/participants');
 const participantsV2Routes = require('./routes/participantsV2');
 const userCommitteesRoutes = require('./routes/userCommittees');
+const amendmentsRoutes = require('./routes/amendments');
 
 const app = express();
 const server = http.createServer(app);
@@ -67,6 +68,7 @@ app.use('/api/conference', conferenceRoutes);
 app.use('/api/participants', participantsRoutes);
 app.use('/api/participantsV2', participantsV2Routes);
 app.use('/api/user-committees', userCommitteesRoutes);
+app.use('/api/amendments', amendmentsRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

@@ -16,7 +16,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     const amendmentsBtn = document.querySelector('.amendments-btn');
-    if (amendmentsBtn) amendmentsBtn.addEventListener('click', () => alert('Amendments feature coming soon!'));
+    if (amendmentsBtn) amendmentsBtn.addEventListener('click', () => {
+        const code = getConferenceCodeFromURL();
+        window.location.href = `amendment.html?code=${code}`;
+    });
 
     const votingBtn = document.querySelector('.voting-btn');
     if (votingBtn) votingBtn.addEventListener('click', () => alert('Voting feature coming soon!'));
