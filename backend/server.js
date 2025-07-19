@@ -13,6 +13,7 @@ const emailService = require('./services/emailService');
 const conferenceRoutes = require('./routes/conference');
 const participantsRoutes = require('./routes/participants');
 const participantsV2Routes = require('./routes/participantsV2');
+const userCommitteesRoutes = require('./routes/userCommittees');
 
 const app = express();
 const server = http.createServer(app);
@@ -65,6 +66,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/conference', conferenceRoutes);
 app.use('/api/participants', participantsRoutes);
 app.use('/api/participantsV2', participantsV2Routes);
+app.use('/api/user-committees', userCommitteesRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -99,6 +101,10 @@ app.get('/dashboard', (req, res) => {
 
 app.get('/profile', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/profile.html'));
+});
+
+app.get('/my_committees', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/my_committees.html'));
 });
 
 // 404 handler

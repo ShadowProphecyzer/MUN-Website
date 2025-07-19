@@ -77,4 +77,13 @@ document.addEventListener('DOMContentLoaded', async function() {
             window.location.href = 'dashboard.html';
         });
     }
+
+    // Dashboard-style button click delegation
+    const returnDashboardBtn = document.querySelector('.return-dashboard-btn');
+    if (returnDashboardBtn) {
+        returnDashboardBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            window.location.href = 'dashboard.html';
+        });
+    }
 });

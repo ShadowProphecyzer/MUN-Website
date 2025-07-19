@@ -78,7 +78,7 @@ body {
   color: #cba135 !important;
   font-weight: bold;
 }
-.nav-sign-up-btn {
+.dashboard-action-btn {
   background-color: #cba135;
   color: #000000;
   border: none;
@@ -96,7 +96,29 @@ body {
   text-decoration: none;
   justify-content: center;
 }
-.nav-sign-up-btn:hover {
+.dashboard-action-btn:hover {
+  background-color: #b8902d;
+  color: #000000;
+}
+.dashboard-logout-btn {
+  background-color: #cba135;
+  color: #000000;
+  border: none;
+  padding: 0.45rem 1.1rem;
+  font-weight: bold;
+  font-family: 'Open Sans', sans-serif;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  height: 36px;
+  white-space: nowrap;
+  text-decoration: none;
+  justify-content: center;
+}
+.dashboard-logout-btn:hover {
   background-color: #b8902d;
   color: #000000;
 }
@@ -230,4 +252,25 @@ body {
 .back-dashboard-btn:hover {
   background-color: #b8902d;
   color: #000000;
+}
+
+.return-dashboard-btn {
+  background: linear-gradient(135deg, #cba135, #d6c189);
+  color: #000;
+  border: none;
+  border-radius: 5px;
+  padding: 0.4rem 1rem;
+  font-size: 0.92rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.3rem;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.return-dashboard-btn:hover {
+  background: linear-gradient(135deg, #d6c189, #cba135);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(203, 161, 53, 0.3);
 }

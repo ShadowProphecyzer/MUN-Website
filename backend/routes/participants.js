@@ -3,6 +3,8 @@ const { getConferenceDb } = require('../services/getConferenceDb');
 const ParticipantSchema = require('../models/Participant');
 const { authenticateToken } = require('../middleware/auth');
 const User = require('../models/User');
+const UserCommittee = require('../models/UserCommittee');
+const Conference = require('../models/Conference');
 const path = require('path');
 const fs = require('fs');
 const router = express.Router();
@@ -101,6 +103,31 @@ router.post('/:code/add', authenticateToken, async (req, res) => {
     
     await Participant.create(participantData);
     console.log('[DEBUG] Created new participant');
+    
+    // Add to user committee tracking
+    try {
+      const conference = await Conference.findOne({ code });
+      if (conference) {
+        await UserCommittee.findOneAndUpdate(
+          { userId: user._id, conferenceCode: code },
+          {
+            userId: user._id,
+            conferenceCode: code,
+            conferenceName: conference.name,
+            committeeName: conference.committeeName,
+            role: role,
+            country: country,
+            isActive: true
+          },
+          { upsert: true, new: true }
+        );
+        console.log('[DEBUG] Added user to committee tracking');
+      }
+    } catch (committeeError) {
+      console.error('[DEBUG] Error adding to committee tracking:', committeeError);
+      // Don't fail the main operation if committee tracking fails
+    }
+    
     // Emit update
     req.app.get('io').to(`conference_${code}`).emit('participantsUpdate');
     res.json({ success: true });
@@ -145,6 +172,22 @@ router.post('/:code/remove', authenticateToken, async (req, res) => {
     console.log('[DEBUG] About to remove participant');
     await Participant.deleteOne({ email: target.email });
     console.log('[DEBUG] Participant removed successfully');
+    
+    // Remove from user committee tracking
+    try {
+      const user = await User.findOne({ email: target.email });
+      if (user) {
+        await UserCommittee.findOneAndUpdate(
+          { userId: user._id, conferenceCode: code },
+          { isActive: false }
+        );
+        console.log('[DEBUG] Removed user from committee tracking');
+      }
+    } catch (committeeError) {
+      console.error('[DEBUG] Error removing from committee tracking:', committeeError);
+      // Don't fail the main operation if committee tracking fails
+    }
+    
     req.app.get('io').to(`conference_${code}`).emit('participantsUpdate');
     res.json({ success: true });
   } catch (error) {
@@ -202,6 +245,25 @@ router.post('/:code/role', authenticateToken, async (req, res) => {
     
     await Participant.updateOne({ email: target.email }, { $set: updateData });
     console.log('[DEBUG] Role updated successfully');
+    
+    // Update user committee tracking
+    try {
+      const user = await User.findOne({ email: target.email });
+      if (user) {
+        await UserCommittee.findOneAndUpdate(
+          { userId: user._id, conferenceCode: code },
+          { 
+            role: newRole,
+            country: target.country
+          }
+        );
+        console.log('[DEBUG] Updated user role in committee tracking');
+      }
+    } catch (committeeError) {
+      console.error('[DEBUG] Error updating committee tracking:', committeeError);
+      // Don't fail the main operation if committee tracking fails
+    }
+    
     req.app.get('io').to(`conference_${code}`).emit('participantsUpdate');
     res.json({ success: true });
   } catch (error) {

@@ -293,7 +293,7 @@ function joinCommittees() {
 }
 
 function viewCommittees() {
-    alert('View Committees functionality is not yet implemented.');
+    window.location.href = 'my_committees.html';
 }
 
 function viewConferences() {

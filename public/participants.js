@@ -363,12 +363,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     renderParticipants(updated);
   });
 
-  // Logout
-  document.querySelectorAll('.logout-btn').forEach(btn => {
+  // Leave Conference button
+  document.querySelectorAll('.leave-conference-btn').forEach(btn => {
     btn.onclick = function() {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userData');
-      window.location.href = 'signin_signup.html';
+      if (confirm('Are you sure you want to leave this conference? You will be redirected to the dashboard.')) {
+        window.location.href = 'dashboard.html';
+      }
     };
   });
 });

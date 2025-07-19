@@ -37,6 +37,95 @@ document.addEventListener('DOMContentLoaded', function() {
     // Conference details will be fetched after authentication is confirmed
 });
 
+// Display user's role and country information
+function displayUserInfo(participant) {
+    const roleElem = document.getElementById('userRole');
+    const countryDisplay = document.getElementById('userCountryDisplay');
+    const countryElem = document.getElementById('userCountry');
+    const roleCard = document.querySelector('.user-role-card');
+    
+    if (roleElem) {
+        // Capitalize the first letter of the role
+        const roleText = participant.role.charAt(0).toUpperCase() + participant.role.slice(1);
+        roleElem.textContent = roleText;
+    }
+    
+    // Apply role-based color scheme
+    if (roleCard) {
+        applyRoleColorScheme(roleCard, participant.role.toLowerCase());
+    }
+    
+    // Show country only if the user is a delegate and has a country assigned
+    if (participant.role.toLowerCase() === 'delegate' && participant.country && participant.country.trim() !== '') {
+        if (countryDisplay) countryDisplay.style.display = 'flex';
+        if (countryElem) countryElem.textContent = participant.country;
+    } else {
+        if (countryDisplay) countryDisplay.style.display = 'none';
+    }
+}
+
+// Apply role-based color scheme
+function applyRoleColorScheme(roleCard, role) {
+    // Remove any existing role classes
+    roleCard.className = 'user-role-card';
+    
+    // Add role-specific class
+    roleCard.classList.add(`role-${role}`);
+    
+    // Apply specific colors based on role
+    switch (role) {
+        case 'god':
+            roleCard.style.setProperty('--role-border-color', '#dc3545');
+            roleCard.style.setProperty('--role-accent-color', '#dc3545');
+            roleCard.style.setProperty('--role-label-color', '#dc3545');
+            roleCard.style.setProperty('--role-bg-color', 'rgba(220, 53, 69, 0.1)');
+            roleCard.style.setProperty('--role-border-bg', 'rgba(220, 53, 69, 0.3)');
+            break;
+        case 'owner':
+            roleCard.style.setProperty('--role-border-color', '#cba135');
+            roleCard.style.setProperty('--role-accent-color', '#cba135');
+            roleCard.style.setProperty('--role-label-color', '#cba135');
+            roleCard.style.setProperty('--role-bg-color', 'rgba(203, 161, 53, 0.1)');
+            roleCard.style.setProperty('--role-border-bg', 'rgba(203, 161, 53, 0.3)');
+            break;
+        case 'administrator':
+            roleCard.style.setProperty('--role-border-color', '#6c757d');
+            roleCard.style.setProperty('--role-accent-color', '#6c757d');
+            roleCard.style.setProperty('--role-label-color', '#6c757d');
+            roleCard.style.setProperty('--role-bg-color', 'rgba(108, 117, 125, 0.1)');
+            roleCard.style.setProperty('--role-border-bg', 'rgba(108, 117, 125, 0.3)');
+            break;
+        case 'moderator':
+            roleCard.style.setProperty('--role-border-color', '#6f42c1');
+            roleCard.style.setProperty('--role-accent-color', '#6f42c1');
+            roleCard.style.setProperty('--role-label-color', '#6f42c1');
+            roleCard.style.setProperty('--role-bg-color', 'rgba(111, 66, 193, 0.1)');
+            roleCard.style.setProperty('--role-border-bg', 'rgba(111, 66, 193, 0.3)');
+            break;
+        case 'chair':
+            roleCard.style.setProperty('--role-border-color', '#28a745');
+            roleCard.style.setProperty('--role-accent-color', '#28a745');
+            roleCard.style.setProperty('--role-label-color', '#28a745');
+            roleCard.style.setProperty('--role-bg-color', 'rgba(40, 167, 69, 0.1)');
+            roleCard.style.setProperty('--role-border-bg', 'rgba(40, 167, 69, 0.3)');
+            break;
+        case 'delegate':
+            roleCard.style.setProperty('--role-border-color', '#f8f9fa');
+            roleCard.style.setProperty('--role-accent-color', '#f8f9fa');
+            roleCard.style.setProperty('--role-label-color', '#f8f9fa');
+            roleCard.style.setProperty('--role-bg-color', 'rgba(248, 249, 250, 0.1)');
+            roleCard.style.setProperty('--role-border-bg', 'rgba(248, 249, 250, 0.3)');
+            break;
+        default:
+            // Default to red for unknown roles
+            roleCard.style.setProperty('--role-border-color', '#dc3545');
+            roleCard.style.setProperty('--role-accent-color', '#dc3545');
+            roleCard.style.setProperty('--role-label-color', '#dc3545');
+            roleCard.style.setProperty('--role-bg-color', 'rgba(220, 53, 69, 0.1)');
+            roleCard.style.setProperty('--role-border-bg', 'rgba(220, 53, 69, 0.3)');
+    }
+}
+
 // Fetch and display conference details
 async function displayConferenceDetails() {
     const code = getConferenceCodeFromURL();
@@ -126,11 +215,13 @@ async function checkAuthStatus() {
             if (partRes.response.ok && partRes.data.success && Array.isArray(partRes.data.data)) {
                 const participants = partRes.data.data;
                 const userEmail = data.user.email.toLowerCase();
-                const isParticipant = participants.some(p => p.email.toLowerCase() === userEmail);
-                if (!isParticipant) {
+                const currentParticipant = participants.find(p => p.email.toLowerCase() === userEmail);
+                if (!currentParticipant) {
                     showNotParticipantMessage();
                     return;
                 }
+                // Display user's role and country
+                displayUserInfo(currentParticipant);
                 // Fetch conference details immediately after authentication and participant verification
                 displayConferenceDetails();
             } else {

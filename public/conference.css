@@ -113,25 +113,111 @@ body {
   padding: 2rem;
 }
 
-.welcome-section {
-  text-align: center;
+/* Conference Overview Section */
+.conference-overview-section {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
   margin-bottom: 4rem;
-  padding: 3rem 0;
+  align-items: start;
 }
 
-.welcome-section h1 {
+.conference-details-card {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid #cba135;
+  border-radius: 15px;
+  padding: 2.5rem;
+  text-align: left;
+  box-shadow: 0 10px 30px rgba(203, 161, 53, 0.15);
+}
+
+.conference-details-card h1 {
   font-family: 'Playfair Display', serif;
-  font-size: 3rem;
+  font-size: 2.5rem;
   color: #d6c189;
   margin-bottom: 1rem;
   text-shadow: 1px 1px 2px #000;
+  line-height: 1.2;
 }
 
-.welcome-section p {
+.conference-details-card h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  color: #cba135;
+  margin-bottom: 1.5rem;
+  text-shadow: 1px 1px 2px #000;
+}
+
+.conference-details-card p {
   font-size: 1.2rem;
   color: #f5e6c5;
-  max-width: 600px;
-  margin: 0 auto;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* User Role Card - Dynamic Color Scheme */
+.user-role-card {
+  background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+  border: 2px solid var(--role-border-color, #dc3545);
+  border-radius: 15px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 10px 30px var(--role-accent-color, rgba(220, 53, 69, 0.2));
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.user-role-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--role-accent-color, #dc3545), var(--role-accent-color, #dc3545));
+}
+
+.user-role-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: var(--role-accent-color, #dc3545);
+  margin-bottom: 1.5rem;
+  text-shadow: 1px 1px 2px #000;
+  position: relative;
+  z-index: 1;
+}
+
+.user-role-display, .user-country-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: var(--role-bg-color, rgba(220, 53, 69, 0.1));
+  border-radius: 10px;
+  border: 1px solid var(--role-border-bg, rgba(220, 53, 69, 0.3));
+}
+
+.user-role-display:last-child, .user-country-display:last-child {
+  margin-bottom: 0;
+}
+
+.role-label, .country-label {
+  font-weight: bold;
+  color: var(--role-label-color, #dc3545);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+}
+
+.role-value, .country-value {
+  color: #f5e6c5;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  text-shadow: 1px 1px 2px #000;
 }
 
 .conference-grid {
@@ -219,11 +305,21 @@ body {
   .main-content {
     padding: 1rem;
   }
-  .welcome-section h1 {
+  .conference-overview-section {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .conference-details-card h1 {
     font-size: 2rem;
   }
-  .welcome-section p {
+  .conference-details-card h2 {
+    font-size: 1.5rem;
+  }
+  .conference-details-card p {
     font-size: 1rem;
+  }
+  .user-role-card {
+    padding: 1.5rem;
   }
   .conference-grid {
     gap: 1rem;

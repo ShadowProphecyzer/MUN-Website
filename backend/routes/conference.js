@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const Conference = require('../models/Conference');
+const UserCommittee = require('../models/UserCommittee');
 const { authenticateToken } = require('../middleware/auth');
 const router = express.Router();
 
@@ -114,6 +115,51 @@ router.post('/create', authenticateToken, async (req, res) => {
       console.error('[DEBUG] Error fetching all participants:', err);
     }
     
+    // Add creator to user committee tracking
+    try {
+      await UserCommittee.findOneAndUpdate(
+        { userId: req.user.id, conferenceCode: code },
+        {
+          userId: req.user.id,
+          conferenceCode: code,
+          conferenceName: name,
+          committeeName: committeeName,
+          role: 'Owner',
+          isActive: true
+        },
+        { upsert: true, new: true }
+      );
+      console.log('[DEBUG] Added creator to user committee tracking');
+    } catch (committeeError) {
+      console.error('[DEBUG] Error adding creator to committee tracking:', committeeError);
+      // Don't fail the main operation if committee tracking fails
+    }
+    
+    // Add GOD to user committee tracking if exists
+    if (godEmail) {
+      try {
+        const godUser = await require('../models/User').findOne({ email: godEmail });
+        if (godUser) {
+          await UserCommittee.findOneAndUpdate(
+            { userId: godUser._id, conferenceCode: code },
+            {
+              userId: godUser._id,
+              conferenceCode: code,
+              conferenceName: name,
+              committeeName: committeeName,
+              role: 'GOD',
+              isActive: true
+            },
+            { upsert: true, new: true }
+          );
+          console.log('[DEBUG] Added GOD to user committee tracking');
+        }
+      } catch (committeeError) {
+        console.error('[DEBUG] Error adding GOD to committee tracking:', committeeError);
+        // Don't fail the main operation if committee tracking fails
+      }
+    }
+    
     console.log('[DEBUG] Conference creation completed successfully');
     res.json({
       success: true,
@@ -172,6 +218,27 @@ router.post('/validate-code', authenticateToken, async (req, res) => {
         success: false, 
         message: 'You are not in this conference or committee. Please consult an administrator or the owner.' 
       });
+    }
+    
+    // Add user to committee tracking if not already there
+    try {
+      await UserCommittee.findOneAndUpdate(
+        { userId: req.user.id, conferenceCode: code },
+        {
+          userId: req.user.id,
+          conferenceCode: code,
+          conferenceName: conference.name,
+          committeeName: conference.committeeName,
+          role: participant.role,
+          country: participant.country,
+          isActive: true
+        },
+        { upsert: true, new: true }
+      );
+      console.log('[DEBUG] Added user to committee tracking during validation');
+    } catch (committeeError) {
+      console.error('[DEBUG] Error adding user to committee tracking:', committeeError);
+      // Don't fail the main operation if committee tracking fails
     }
     
     console.log('[DEBUG] Code validation successful');
