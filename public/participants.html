@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Participants - MUN Website</title>
+    <link id="stylesheet" rel="stylesheet" href="participants.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="participants.js" defer></script>
+    <style>
+    .participants-card.large-panel {
+      max-width: 950px;
+    }
+    </style>
+</head>
+<body>
+    <header class="main-nav-bar">
+        <a href="contact_us.html" class="contact_us">☎ Contact Us</a>
+        <a href="homepage.html" class="mun-logo"></a>
+        <div class="additional-options">
+            <a href="learn.html" class="learn-more">Learn More</a>
+            <span class="user-menu" id="userMenu">Welcome, <span id="userName">User</span></span>
+            <button class="leave-conference-btn participants-logout-btn">Leave Conference</button>
+        </div>
+    </header>
+    <main class="main-content">
+        <section class="participants-section">
+            <div class="participants-card large-panel">
+                <h1 class="panel-title">Manage Participants</h1>
+                <div class="welcome-message" id="welcomeMessage">Welcome, <span id="currentUsername">[Username]</span></div>
+                <div class="add-participant-row">
+                    <input type="text" id="addParticipantInput" placeholder="Add user email">
+                    <select id="addRoleSelect" class="role-select">
+                        <option value="unassigned">Unassigned</option>
+                        <option value="administrator">Administrator</option>
+                        <option value="moderator">Moderator</option>
+                        <option value="chair">Chair</option>
+                        <option value="delegate">Delegate</option>
+                    </select>
+                    <select id="addCountrySelect" class="country-select" style="display:none;"></select>
+                    <button id="addParticipantBtn">Add</button>
+                </div>
+                <ul class="participants-list" id="participantsList">
+                    <!-- Participants will be rendered here -->
+                </ul>
+                <button class="return-conference-btn" id="returnConferenceBtn">Return to Conference Page</button>
+            </div>
+        </section>
+    </main>
+    <footer class="footer-section">
+        <p>&copy; All Rights Reserved.</p>
+    </footer>
+</body>
+</html> 

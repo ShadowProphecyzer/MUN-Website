@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contributions - MUN Website</title>
+    <link id="stylesheet" rel="stylesheet" href="contributions.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="contributions.js"></script>
+</head>
+<body>
+    <header class="main-nav-bar">
+        <a href="contact_us.html" class="contact_us">☎ Contact Us</a>
+        <a href="homepage.html" class="mun-logo"></a>
+        <div class="additional-options">
+            <a href="learn.html" class="learn-more">Learn More</a>
+            <span class="user-menu" id="userMenu">Welcome, <span id="userName">User</span></span>
+            <button class="leave-conference-btn conference-logout-btn">Leave Conference</button>
+        </div>
+    </header>
+    <main class="main-content">
+        <section class="contribution-overview-section">
+            <div class="contribution-details-card">
+                <h1>Conference Contributions Tracking</h1>
+                <h2>Delegate Attendance & Participation</h2>
+                <p>Track attendance, voting status, and participation metrics for all delegates.</p>
+                
+                <div class="contributions-table-container">
+                    <table class="contributions-table">
+                        <thead>
+                            <tr>
+                                <th>Country</th>
+                                <th>Present</th>
+                                <th>Voting</th>
+                                <th title="Points of Information">POI's</th>
+                                <th>Amendments</th>
+                                <th>Speeches</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contributions-table-body">
+                            <!-- Table rows will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <button class="return-conference-btn">Return to Conference Page</button>
+            </div>
+        </section>
+    </main>
+    <footer class="footer-section">
+        <p>&copy; All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

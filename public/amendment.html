@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amendments - MUN Website</title>
+    <link id="stylesheet" rel="stylesheet" href="amendment.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="amendment.js"></script>
+</head>
+<body>
+    <header class="main-nav-bar">
+        <a href="contact_us.html" class="contact_us">☎ Contact Us</a>
+        <a href="homepage.html" class="mun-logo"></a>
+        <div class="additional-options">
+            <a href="learn.html" class="learn-more">Learn More</a>
+            <span class="user-menu" id="userMenu">Welcome, <span id="userName">User</span></span>
+            <button class="leave-conference-btn conference-logout-btn">Leave Conference</button>
+        </div>
+    </header>
+    <main class="main-content">
+        <section class="amendment-overview-section">
+            <div class="amendment-details-card">
+                <button class="add-amendment-btn">+ Add Amendment</button>
+                <h1>Welcome to the Amendments Page</h1>
+                <h2>[Amendment Section Title]</h2>
+                <p>[This is placeholder text for the amendments section. Actual content will be added later.]</p>
+                <button class="return-conference-btn">Return to Conference Page</button>
+            </div>
+        </section>
+    </main>
+    <footer class="footer-section">
+        <p>&copy; All Rights Reserved.</p>
+    </footer>
+    <div id="addAmendmentModal" class="amendment-modal" style="display:none;">
+      <div class="amendment-modal-content">
+        <button class="amendment-modal-close" title="Close">&times;</button>
+        <div class="amendment-modal-userinfo">
+          <span id="modalUserRole">Role: [Loading...]</span>
+          <span id="modalUserCountry" style="display:none;">Country: [Loading...]</span>
+        </div>
+        <form id="addAmendmentForm">
+          <label class="amendment-ref-label" for="amendmentNumber" style="display:block;text-align:left;margin-bottom:0.3rem;font-weight:600;color:#ffe082;">Amendment Reference</label>
+          <div class="amendment-modal-fields">
+            <input type="number" id="amendmentNumber" name="number" placeholder="Number" required min="1" />
+            <input type="text" id="amendmentLetter" name="letter" placeholder="Letter" maxlength="1" required />
+            <input type="text" id="amendmentRoman" name="roman" placeholder="Roman" required />
+            <select id="amendmentActionType" name="actionType" required>
+              <option value="" disabled selected>Action Type</option>
+              <option value="add">Add</option>
+              <option value="modify">Modify</option>
+              <option value="strike">Strike</option>
+            </select>
+          </div>
+          <textarea id="amendmentContent" name="content" placeholder="Amendment Content" required rows="6"></textarea>
+          <div class="amendment-modal-bottom">
+            <label class="amendment-friendly-label">
+              <input type="checkbox" id="amendmentFriendly" name="friendly" /> Friendly amendment?
+            </label>
+            <button type="submit" class="amendment-modal-submit">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+</body>
+</html>
