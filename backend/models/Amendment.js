@@ -12,9 +12,18 @@ const AmendmentSchema = new mongoose.Schema({
   number: { type: Number, required: true },
   letter: { type: String, required: true },
   roman: { type: String, required: true },
+  actionType: { 
+    type: String, 
+    enum: ['add', 'modify', 'strike'], 
+    required: true 
+  },
   content: { type: String, required: true },
   friendly: { type: Boolean, required: true },
-  accepted: { type: Boolean, default: false },
+  status: { 
+    type: String, 
+    enum: ['passed', 'rejected', 'debating', 'on_hold'], 
+    default: 'on_hold' 
+  },
   createdAt: { type: Date, default: Date.now },
 });
 
