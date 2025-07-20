@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { requireAuth } = require('../middleware/auth');
-const getConferenceDb = require('../services/getConferenceDb');
+const { getConferenceDb } = require('../services/getConferenceDb');
 const ContributionSchema = require('../models/Contribution');
 
 // Helper function to check if user has required role
@@ -14,35 +14,26 @@ function hasRequiredRole(user) {
 router.get('/:conferenceCode', requireAuth, async (req, res) => {
     try {
         const { conferenceCode } = req.params;
-        const user = req.user;
-        console.log('[GET contributions] User:', user);
-        console.log('[GET contributions] User role:', user && user.role);
-
-        // Check role access
-        if (!hasRequiredRole(user)) {
-            console.warn('[GET contributions] Access denied for user:', user);
-            return res.status(403).json({
-                success: false,
-                message: 'Access denied. Only God, Owner, Administrator, and Chair roles can access contributions.'
-            });
-        }
-
-        // Get conference-specific database
+        // No role check needed, just require authentication
         const db = await getConferenceDb(conferenceCode);
         const Contribution = db.model('Contribution', ContributionSchema);
-
-        // Get all contributions for this conference
         const contributions = await Contribution.find({ conferenceCode }).sort({ country: 1 });
-
         res.json({
             success: true,
             data: contributions
         });
     } catch (error) {
         console.error('Error fetching contributions:', error);
+        console.error('Detailed error info:', {
+            message: error.message,
+            stack: error.stack,
+            conferenceCode: req.params.conferenceCode,
+            user: req.user || null
+        });
         res.status(500).json({
             success: false,
-            message: 'Failed to fetch contributions'
+            message: 'Failed to fetch contributions',
+            error: error.message
         });
     }
 });
@@ -52,19 +43,20 @@ router.patch('/:conferenceCode/:country/:field', requireAuth, async (req, res) =
     try {
         const { conferenceCode, country, field } = req.params;
         const { value } = req.body;
-        const user = req.user;
-        console.log('[PATCH contributions] User:', user);
-        console.log('[PATCH contributions] User role:', user && user.role);
-
-        // Check role access
-        if (!hasRequiredRole(user)) {
-            console.warn('[PATCH contributions] Access denied for user:', user);
+        // Get conference-specific database
+        const db = await getConferenceDb(conferenceCode);
+        const Participant = db.model('Participant', require('../models/Participant'));
+        // Find the participant record for the current user in this conference
+        const participant = await Participant.findOne({ email: req.user.email.trim().toLowerCase() });
+        console.log('[PATCH contributions] Conference participant:', participant);
+        // Check role access using the participant's role
+        if (!hasRequiredRole(participant)) {
+            console.warn('[PATCH contributions] Access denied for participant:', participant);
             return res.status(403).json({
                 success: false,
                 message: 'Access denied. Only God, Owner, Administrator, and Chair roles can modify contributions.'
             });
         }
-
         // Validate field
         const allowedFields = ['present', 'voting', 'pois', 'amendments', 'speeches'];
         if (!allowedFields.includes(field)) {
@@ -73,7 +65,6 @@ router.patch('/:conferenceCode/:country/:field', requireAuth, async (req, res) =
                 message: 'Invalid field'
             });
         }
-
         // Validate value based on field type
         if (field === 'present' || field === 'voting') {
             if (typeof value !== 'boolean') {
@@ -92,11 +83,7 @@ router.patch('/:conferenceCode/:country/:field', requireAuth, async (req, res) =
                 });
             }
         }
-
-        // Get conference-specific database
-        const db = await getConferenceDb(conferenceCode);
         const Contribution = db.model('Contribution', ContributionSchema);
-
         // Find and update the contribution record
         const updateData = { [field]: value };
         const contribution = await Contribution.findOneAndUpdate(
@@ -108,7 +95,6 @@ router.patch('/:conferenceCode/:country/:field', requireAuth, async (req, res) =
                 setDefaultsOnInsert: true 
             }
         );
-
         // Emit socket event for live updates
         if (req.app.get('io')) {
             req.app.get('io').to(conferenceCode).emit('contributionUpdate', {
@@ -119,7 +105,6 @@ router.patch('/:conferenceCode/:country/:field', requireAuth, async (req, res) =
                 updatedAt: contribution.updatedAt
             });
         }
-
         res.json({
             success: true,
             data: contribution
@@ -129,65 +114,6 @@ router.patch('/:conferenceCode/:country/:field', requireAuth, async (req, res) =
         res.status(500).json({
             success: false,
             message: 'Failed to update contribution'
-        });
-    }
-});
-
-// POST /api/contributions/:conferenceCode/initialize - Initialize contributions for all delegates
-router.post('/:conferenceCode/initialize', requireAuth, async (req, res) => {
-    try {
-        const { conferenceCode } = req.params;
-        const user = req.user;
-        console.log('[POST initialize contributions] User:', user);
-        console.log('[POST initialize contributions] User role:', user && user.role);
-
-        // Check role access
-        if (!hasRequiredRole(user)) {
-            console.warn('[POST initialize contributions] Access denied for user:', user);
-            return res.status(403).json({
-                success: false,
-                message: 'Access denied. Only God, Owner, Administrator, and Chair roles can initialize contributions.'
-            });
-        }
-
-        // Get conference-specific database
-        const db = await getConferenceDb(conferenceCode);
-        const Contribution = db.model('Contribution', ContributionSchema);
-        const Participant = db.model('Participant', require('../models/Participant'));
-
-        // Get all delegates from participants
-        const delegates = await Participant.find({ 
-            conferenceCode, 
-            role: 'delegate' 
-        }).select('country').sort({ country: 1 });
-
-        // Create contribution records for each delegate
-        const contributions = [];
-        for (const delegate of delegates) {
-            if (delegate.country) {
-                const contribution = await Contribution.findOneAndUpdate(
-                    { conferenceCode, country: delegate.country },
-                    {},
-                    { 
-                        new: true, 
-                        upsert: true, 
-                        setDefaultsOnInsert: true 
-                    }
-                );
-                contributions.push(contribution);
-            }
-        }
-
-        res.json({
-            success: true,
-            data: contributions,
-            message: `Initialized ${contributions.length} contribution records`
-        });
-    } catch (error) {
-        console.error('Error initializing contributions:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to initialize contributions'
         });
     }
 });

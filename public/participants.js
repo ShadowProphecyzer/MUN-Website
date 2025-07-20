@@ -213,13 +213,13 @@ function addDropdownListeners() {
       if (!data.success) {
         // Show specific error messages based on the response
         if (res.status === 403) {
-          alert('❌ Permission Denied: You do not have permission to assign countries.');
+          showError('❌ Permission Denied: You do not have permission to assign countries.');
         } else if (res.status === 400 && data.message.includes('Only delegates can have a country')) {
-          alert('❌ Only delegates can be assigned countries. Please change the participant role to "Delegate" first.');
+          showError('❌ Only delegates can be assigned countries. Please change the participant role to "Delegate" first.');
         } else if (res.status === 404) {
-          alert('❌ Participant not found.');
+          showError('❌ Participant not found.');
         } else {
-          alert(`❌ Error: ${data.message || 'Failed to assign country.'}`);
+          showError(`❌ Error: ${data.message || 'Failed to assign country.'}`);
         }
       } else {
         // Success - the real-time update will handle the UI refresh
@@ -248,14 +248,14 @@ function addDropdownListeners() {
         // Show specific error messages based on the response
         if (res.status === 403) {
           if (data.message.includes('Cannot remove GOD/Owner/Administrator')) {
-            alert('❌ Cannot remove this participant. GOD, Owner, and Administrator roles are protected from removal.');
+            showError('❌ Cannot remove this participant. GOD, Owner, and Administrator roles are protected from removal.');
           } else {
-            alert('❌ Permission Denied: You do not have permission to remove participants.');
+            showError('❌ Permission Denied: You do not have permission to remove participants.');
           }
         } else if (res.status === 404) {
-          alert('❌ Participant not found.');
+          showError('❌ Participant not found.');
         } else {
-          alert(`❌ Error: ${data.message || 'Failed to remove participant.'}`);
+          showError(`❌ Error: ${data.message || 'Failed to remove participant.'}`);
         }
       } else {
         // Success - the real-time update will handle the UI refresh
@@ -276,10 +276,24 @@ async function addParticipant(email, role, country = '') {
   });
   const data = await res.json();
   if (!data.success) {
-    alert(data.message || 'Failed to add participant.');
+    showError(data.message || 'Failed to add participant.');
     return false;
   }
   return true;
+}
+
+// Utility to show styled error messages
+function showError(message) {
+    const errorDiv = document.getElementById('errorMessage');
+    if (errorDiv) {
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 4000);
+    } else {
+        alert(message); // fallback
+    }
 }
 
 document.addEventListener('DOMContentLoaded', async function() {

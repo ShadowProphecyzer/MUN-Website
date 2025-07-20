@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debate - MUN Website</title>
+    <link id="stylesheet" rel="stylesheet" href="debate.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="debate.js"></script>
+</head>
+<body>
+    <header class="main-nav-bar">
+        <a href="contact_us.html" class="contact_us">☎ Contact Us</a>
+        <a href="homepage.html" class="mun-logo"></a>
+        <div class="additional-options">
+            <a href="learn.html" class="learn-more">Learn More</a>
+            <span class="user-menu" id="userMenu">Welcome, <span id="userName">User</span></span>
+            <button class="leave-conference-btn conference-logout-btn">Leave Conference</button>
+        </div>
+    </header>
+    <main class="main-content">
+        <section class="debate-overview-section">
+            <div class="debate-details-card">
+                <button class="add-debate-btn">+ Add Debate Note</button>
+                <h1>Welcome to the Debate Page</h1>
+                <h2>[Debate Section Title]</h2>
+                <p>[This is placeholder text for the debate section. Actual content will be added later.]</p>
+                <button class="return-conference-btn">Return to Conference Page</button>
+            </div>
+        </section>
+    </main>
+    <footer class="footer-section">
+        <p>&copy; All Rights Reserved.</p>
+    </footer>
+    <div id="addDebateModal" class="debate-modal" style="display:none;">
+      <div class="debate-modal-content">
+        <button class="debate-modal-close" title="Close">&times;</button>
+        <div class="debate-modal-userinfo">
+          <span id="modalUserRole">Role: [Loading...]</span>
+          <span id="modalUserCountry" style="display:none;">Country: [Loading...]</span>
+        </div>
+        <form id="addDebateForm">
+          <label class="debate-ref-label" for="debateTopic" style="display:block;text-align:left;margin-bottom:0.3rem;font-weight:600;color:#ffe082;">Debate Topic</label>
+          <div class="debate-modal-fields">
+            <input type="text" id="debateTopic" name="topic" placeholder="Topic" required />
+            <input type="text" id="debateSpeaker" name="speaker" placeholder="Speaker" required />
+          </div>
+          <textarea id="debateContent" name="content" placeholder="Debate Content" required rows="6"></textarea>
+          <div class="debate-modal-bottom">
+            <label class="debate-important-label">
+              <input type="checkbox" id="debateImportant" name="important" /> Mark as important
+            </label>
+            <button type="submit" class="debate-modal-submit">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+</body>
+</html>

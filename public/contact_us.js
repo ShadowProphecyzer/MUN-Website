@@ -158,19 +158,15 @@ function setupContactForm() {
     function showMessage(message, type) {
         messageContainer.textContent = message;
         messageContainer.style.display = "block";
-        
-        // Set styling based on message type
         if (type === "success") {
             messageContainer.style.backgroundColor = "#d4edda";
             messageContainer.style.color = "#155724";
             messageContainer.style.border = "1px solid #c3e6cb";
         } else {
-            messageContainer.style.backgroundColor = "#f8d7da";
-            messageContainer.style.color = "#721c24";
-            messageContainer.style.border = "1px solid #f5c6cb";
+            messageContainer.style.background = "rgba(203, 161, 53, 0.12)";
+            messageContainer.style.color = "#ffe082";
+            messageContainer.style.border = "1px solid #cba135";
         }
-        
-        // Auto-hide after 5 seconds
         setTimeout(() => {
             messageContainer.style.display = "none";
         }, 5000);

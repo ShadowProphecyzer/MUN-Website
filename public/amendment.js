@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (addBtn) {
         addBtn.addEventListener('click', function() {
             if (!participantLoaded) {
-                alert('User info is still loading. Please wait a moment and try again.');
+                showError('User info is still loading. Please wait a moment and try again.');
                 return;
             }
             setModalUserInfo(currentParticipant);
@@ -282,11 +282,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Status updated successfully');
                 // Real-time update will be handled by WebSocket
             } else {
-                alert(res.data.message || 'Failed to update status.');
+                showError(res.data.message || 'Failed to update status.');
             }
         } catch (error) {
             console.error('Error updating status:', error);
-            alert('Failed to update status.');
+            showError('Failed to update status.');
         }
     }
 
@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     actionType: !actionType,
                     content: !content
                 });
-                alert('Please fill all fields correctly.');
+                showError('Please fill all fields correctly.');
                 return;
             }
             const code = getConferenceCodeFromURL();
@@ -420,7 +420,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Live update
                 fetchAndRenderAmendments();
             } else {
-                alert(res.data.message || 'Failed to add amendment.');
+                showError(res.data.message || 'Failed to add amendment.');
             }
         });
     }
@@ -535,5 +535,19 @@ function showNotParticipantMessage() {
                 window.location.href = 'dashboard.html';
             });
         }
+    }
+}
+
+// Utility to show styled error messages
+function showError(message) {
+    const errorDiv = document.getElementById('errorMessage');
+    if (errorDiv) {
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 4000);
+    } else {
+        alert(message); // fallback
     }
 }

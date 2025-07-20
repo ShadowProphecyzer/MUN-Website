@@ -219,15 +219,15 @@ async function handleConferenceSubmit(e) {
     // Basic validation
     let hasErrors = false;
     if (!formData.name) {
-        showError('conferenceNameError', 'Conference name is required');
+        showError('Conference name is required');
         hasErrors = true;
     }
     if (!formData.committeeName) {
-        showError('committeeNameError', 'Committee name is required');
+        showError('Committee name is required');
         hasErrors = true;
     }
     if (!formData.committeeIssue) {
-        showError('committeeIssueError', 'Committee issue is required');
+        showError('Committee issue is required');
         hasErrors = true;
     }
     if (hasErrors) {
@@ -262,23 +262,33 @@ async function handleConferenceSubmit(e) {
                     }
                 });
             } else {
-                alert(data.message || 'Failed to create conference');
+                showError(data.message || 'Failed to create conference');
             }
             // Go back to form step
             showStep(2);
         }
     } catch (error) {
         console.error('Conference creation error:', error);
-        alert('Network error. Please try again.');
+        showError('Network error. Please try again.');
         showStep(2);
     }
 }
 
-function showError(elementId, message) {
-    const errorElement = document.getElementById(elementId);
-    if (errorElement) {
-        errorElement.textContent = message;
+// Utility to show styled error messages
+function showError(message) {
+    let errorDiv = document.getElementById('errorMessage');
+    if (!errorDiv) {
+        errorDiv = document.createElement('div');
+        errorDiv.id = 'errorMessage';
+        errorDiv.className = 'error-message';
+        errorDiv.style.display = 'none';
+        document.body.prepend(errorDiv);
     }
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+    setTimeout(() => {
+        errorDiv.style.display = 'none';
+    }, 4000);
 }
 
 // Logout function

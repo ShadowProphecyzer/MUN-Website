@@ -239,8 +239,6 @@ function showTable() {
 function showError(message) {
     hideLoading();
     hideNoCommittees();
-    
-    // Create error element
     const errorDiv = document.createElement('div');
     errorDiv.className = 'error-message';
     errorDiv.innerHTML = `
@@ -251,31 +249,31 @@ function showError(message) {
             <button onclick="loadUserCommittees()" class="retry-btn">Try Again</button>
         </div>
     `;
-    
-    // Add error styles
     errorDiv.style.cssText = `
         display: flex;
         justify-content: center;
         align-items: center;
         min-height: 300px;
         text-align: center;
+        background: rgba(203, 161, 53, 0.12);
+        color: #ffe082;
+        border: 1px solid #cba135;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(203, 161, 53, 0.10);
     `;
-    
     const errorContent = errorDiv.querySelector('.error-content');
     errorContent.style.cssText = `
         max-width: 400px;
     `;
-    
     const errorIcon = errorDiv.querySelector('.error-icon');
     errorIcon.style.cssText = `
         font-size: 3rem;
         margin-bottom: 1rem;
     `;
-    
     const retryBtn = errorDiv.querySelector('.retry-btn');
     retryBtn.style.cssText = `
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
+        background: linear-gradient(90deg, #cba135 60%, #ffe082 100%);
+        color: #000;
         border: none;
         padding: 0.75rem 1.5rem;
         border-radius: 8px;
@@ -284,16 +282,12 @@ function showError(message) {
         margin-top: 1rem;
         transition: transform 0.2s ease;
     `;
-    
     retryBtn.addEventListener('mouseenter', () => {
         retryBtn.style.transform = 'translateY(-2px)';
     });
-    
     retryBtn.addEventListener('mouseleave', () => {
         retryBtn.style.transform = 'translateY(0)';
     });
-    
-    // Replace content
     const container = document.querySelector('.committees-container');
     container.innerHTML = '';
     container.appendChild(errorDiv);

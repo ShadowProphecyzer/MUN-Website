@@ -43,6 +43,37 @@ router.post('/:code/add', authenticateToken, async (req, res) => {
     };
     await Participant.create(participantData);
     req.app.get('io').to(`conference_${code}`).emit('participantsUpdate');
+
+    // === AUTO-UPDATE CONTRIBUTIONS FOR DELEGATES ===
+    try {
+      const { getConferenceDb } = require('../services/getConferenceDb');
+      const ContributionSchema = require('../models/Contribution');
+      const db = getConferenceDb(code);
+      const Contribution = db.models.Contribution || db.model('Contribution', ContributionSchema);
+      const Participant = db.models.Participant || db.model('Participant', require('../models/Participant'));
+      // Get all delegates with a country, sorted alphabetically
+      const delegates = await Participant.find({ role: 'delegate', country: { $exists: true, $ne: '' } }).sort({ country: 1 });
+      const countries = delegates.map(d => d.country);
+      // Upsert contributions for each delegate country
+      let updatedContributions = [];
+      for (const delegate of delegates) {
+        if (delegate.country) {
+          const contribution = await Contribution.findOneAndUpdate(
+            { conferenceCode: code, country: delegate.country },
+            {},
+            { new: true, upsert: true, setDefaultsOnInsert: true }
+          );
+          updatedContributions.push(contribution);
+        }
+      }
+      // Remove contributions for countries no longer assigned
+      await Contribution.deleteMany({ conferenceCode: code, country: { $nin: countries } });
+      // Emit full updated list
+      updatedContributions = await Contribution.find({ conferenceCode: code }).sort({ country: 1 });
+      req.app.get('io').to(`conference_${code}`).emit('contributionUpdate', { conferenceCode: code, contributions: updatedContributions });
+    } catch (contribError) {
+      console.error('[DEBUG] Error auto-updating contributions:', contribError);
+    }
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Internal server error.' });
@@ -72,6 +103,37 @@ router.post('/:code/remove', authenticateToken, async (req, res) => {
     }
     await Participant.deleteOne({ email: target.email });
     req.app.get('io').to(`conference_${code}`).emit('participantsUpdate');
+
+    // === AUTO-UPDATE CONTRIBUTIONS FOR DELEGATES ===
+    try {
+      const { getConferenceDb } = require('../services/getConferenceDb');
+      const ContributionSchema = require('../models/Contribution');
+      const db = getConferenceDb(code);
+      const Contribution = db.models.Contribution || db.model('Contribution', ContributionSchema);
+      const Participant = db.models.Participant || db.model('Participant', require('../models/Participant'));
+      // Get all delegates with a country, sorted alphabetically
+      const delegates = await Participant.find({ role: 'delegate', country: { $exists: true, $ne: '' } }).sort({ country: 1 });
+      const countries = delegates.map(d => d.country);
+      // Upsert contributions for each delegate country
+      let updatedContributions = [];
+      for (const delegate of delegates) {
+        if (delegate.country) {
+          const contribution = await Contribution.findOneAndUpdate(
+            { conferenceCode: code, country: delegate.country },
+            {},
+            { new: true, upsert: true, setDefaultsOnInsert: true }
+          );
+          updatedContributions.push(contribution);
+        }
+      }
+      // Remove contributions for countries no longer assigned
+      await Contribution.deleteMany({ conferenceCode: code, country: { $nin: countries } });
+      // Emit full updated list
+      updatedContributions = await Contribution.find({ conferenceCode: code }).sort({ country: 1 });
+      req.app.get('io').to(`conference_${code}`).emit('contributionUpdate', { conferenceCode: code, contributions: updatedContributions });
+    } catch (contribError) {
+      console.error('[DEBUG] Error auto-updating contributions:', contribError);
+    }
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Internal server error.' });

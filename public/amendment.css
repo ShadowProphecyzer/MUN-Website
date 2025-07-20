@@ -528,3 +528,16 @@ body {
   background: linear-gradient(90deg, #da190b 60%, #f44336 100%);
   transform: translateY(-1px);
 }
+
+.error-message {
+  background: rgba(203, 161, 53, 0.12);
+  color: #ffe082;
+  border: 1px solid #cba135;
+  border-radius: 6px;
+  padding: 0.7rem 1.2rem;
+  margin: 1rem 0;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(203, 161, 53, 0.10);
+  display: none;
+}

@@ -382,12 +382,16 @@ body {
 
 /* Error message styling */
 .error-message {
-  background-color: rgba(220, 53, 69, 0.1) !important;
-  border: 2px solid #dc3545 !important;
-  border-radius: 10px;
-  padding: 2rem !important;
-  text-align: center;
+  background: rgba(203, 161, 53, 0.12);
+  color: #ffe082;
+  border: 1px solid #cba135;
+  border-radius: 6px;
+  padding: 0.7rem 1.2rem;
   margin: 1rem 0;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(203, 161, 53, 0.10);
+  display: none;
 }
 
 .error-content h3 {

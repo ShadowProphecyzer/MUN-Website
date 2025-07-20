@@ -159,7 +159,31 @@ router.post('/create', authenticateToken, async (req, res) => {
         // Don't fail the main operation if committee tracking fails
       }
     }
-    
+
+    // === AUTO-INITIALIZE CONTRIBUTIONS FOR DELEGATES ===
+    try {
+      const ContributionSchema = require('../models/Contribution');
+      const Contribution = db.models.Contribution || db.model('Contribution', ContributionSchema);
+      // Only delegates with a country, sorted alphabetically
+      const delegates = await Participant.find({ role: 'delegate', country: { $exists: true, $ne: '' } }).sort({ country: 1 });
+      let initializedCount = 0;
+      for (const delegate of delegates) {
+        if (delegate.country) {
+          await Contribution.findOneAndUpdate(
+            { conferenceCode: code, country: delegate.country },
+            {},
+            { new: true, upsert: true, setDefaultsOnInsert: true }
+          );
+          initializedCount++;
+        }
+      }
+      console.log(`[DEBUG] Auto-initialized ${initializedCount} contributions for delegates`);
+    } catch (contribError) {
+      console.error('[DEBUG] Error auto-initializing contributions:', contribError);
+      // Don't fail the main operation if contributions fail
+    }
+    // === END AUTO-INITIALIZE ===
+
     console.log('[DEBUG] Conference creation completed successfully');
     res.json({
       success: true,

@@ -185,6 +185,7 @@ async function fetchParticipantInfo() {
             // Check if participant has required role for contributions access
             const allowedRoles = ['god', 'owner', 'administrator', 'chair'];
             const participantRole = currentParticipant.role ? currentParticipant.role.trim().toLowerCase() : '';
+            currentUserRole = participantRole; // Save for later privilege checks
             const hasRequiredRole = allowedRoles.includes(participantRole);
             
             console.log('🔐 Role check:', {
@@ -254,6 +255,7 @@ let socket = null;
 let contributionsData = [];
 let buttonCooldowns = new Map(); // Track button cooldowns
 const COOLDOWN_TIME = 750; // 0.75 seconds
+let currentUserRole = null; // Track the current user's role for privilege checks
 
 // Setup event listeners
 function setupEventListeners() {
@@ -290,7 +292,13 @@ function initializeSocket() {
         
         socket.on('contributionUpdate', (data) => {
             console.log('📡 Received contribution update:', data);
-            updateContributionInTable(data);
+            if (data && Array.isArray(data.contributions)) {
+                contributionsData = data.contributions;
+                renderContributionsTable();
+            } else {
+                // fallback for old single-update format
+                updateContributionInTable(data);
+            }
         });
     }
 }
@@ -330,7 +338,7 @@ function renderContributionsTable() {
         tbody.innerHTML = `
             <tr>
                 <td colspan="6" class="loading-message">
-                    No contribution data found. Initialize the table to get started.
+                    No contribution data found. Please contact a conference administrator.
                 </td>
             </tr>
         `;
@@ -352,41 +360,95 @@ function createContributionRow(contribution) {
         <td>${contribution.country}</td>
         <td>
             <label class="toggle-switch">
-                <input type="checkbox" ${contribution.present ? 'checked' : ''} 
-                       onchange="updateToggle('${contribution.country}', 'present', this.checked)">
+                <input type="checkbox" class="present-toggle" ${contribution.present ? 'checked' : ''}>
                 <span class="toggle-slider"></span>
             </label>
         </td>
         <td>
             <label class="toggle-switch">
-                <input type="checkbox" ${contribution.voting ? 'checked' : ''} 
-                       onchange="updateToggle('${contribution.country}', 'voting', this.checked)">
+                <input type="checkbox" class="voting-toggle" ${contribution.voting ? 'checked' : ''}>
                 <span class="toggle-slider"></span>
             </label>
         </td>
         <td>
             <div class="number-counter">
-                <button class="counter-btn" onclick="updateCounter('${contribution.country}', 'pois', -1)">-</button>
-                <span class="counter-value">${contribution.pois}</span>
-                <button class="counter-btn" onclick="updateCounter('${contribution.country}', 'pois', 1)">+</button>
+                <button class="counter-btn pois-minus">-</button>
+                <span class="counter-value pois-value">${contribution.pois}</span>
+                <button class="counter-btn pois-plus">+</button>
             </div>
         </td>
         <td>
             <div class="number-counter">
-                <button class="counter-btn" onclick="updateCounter('${contribution.country}', 'amendments', -1)">-</button>
-                <span class="counter-value">${contribution.amendments}</span>
-                <button class="counter-btn" onclick="updateCounter('${contribution.country}', 'amendments', 1)">+</button>
+                <button class="counter-btn amendments-minus">-</button>
+                <span class="counter-value amendments-value">${contribution.amendments}</span>
+                <button class="counter-btn amendments-plus">+</button>
             </div>
         </td>
         <td>
             <div class="number-counter">
-                <button class="counter-btn" onclick="updateCounter('${contribution.country}', 'speeches', -1)">-</button>
-                <span class="counter-value">${contribution.speeches}</span>
-                <button class="counter-btn" onclick="updateCounter('${contribution.country}', 'speeches', 1)">+</button>
+                <button class="counter-btn speeches-minus">-</button>
+                <span class="counter-value speeches-value">${contribution.speeches}</span>
+                <button class="counter-btn speeches-plus">+</button>
             </div>
         </td>
     `;
-    
+
+    // Attach event listeners for toggles
+    const presentToggle = row.querySelector('.present-toggle');
+    if (presentToggle) {
+        presentToggle.addEventListener('change', function() {
+            updateToggle(contribution.country, 'present', presentToggle.checked);
+        });
+    }
+    const votingToggle = row.querySelector('.voting-toggle');
+    if (votingToggle) {
+        votingToggle.addEventListener('change', function() {
+            updateToggle(contribution.country, 'voting', votingToggle.checked);
+        });
+    }
+
+    // Attach event listeners for POIs
+    const poisMinus = row.querySelector('.pois-minus');
+    const poisPlus = row.querySelector('.pois-plus');
+    if (poisMinus) {
+        poisMinus.addEventListener('click', function() {
+            updateCounter(contribution.country, 'pois', -1);
+        });
+    }
+    if (poisPlus) {
+        poisPlus.addEventListener('click', function() {
+            updateCounter(contribution.country, 'pois', 1);
+        });
+    }
+
+    // Attach event listeners for Amendments
+    const amendmentsMinus = row.querySelector('.amendments-minus');
+    const amendmentsPlus = row.querySelector('.amendments-plus');
+    if (amendmentsMinus) {
+        amendmentsMinus.addEventListener('click', function() {
+            updateCounter(contribution.country, 'amendments', -1);
+        });
+    }
+    if (amendmentsPlus) {
+        amendmentsPlus.addEventListener('click', function() {
+            updateCounter(contribution.country, 'amendments', 1);
+        });
+    }
+
+    // Attach event listeners for Speeches
+    const speechesMinus = row.querySelector('.speeches-minus');
+    const speechesPlus = row.querySelector('.speeches-plus');
+    if (speechesMinus) {
+        speechesMinus.addEventListener('click', function() {
+            updateCounter(contribution.country, 'speeches', -1);
+        });
+    }
+    if (speechesPlus) {
+        speechesPlus.addEventListener('click', function() {
+            updateCounter(contribution.country, 'speeches', 1);
+        });
+    }
+
     return row;
 }
 
@@ -465,12 +527,12 @@ function updateContributionInTable(updateData) {
     const row = document.querySelector(`tr[data-country="${country}"]`);
     if (row) {
         if (field === 'present' || field === 'voting') {
-            const checkbox = row.querySelector(`input[onchange*="${field}"]`);
+            const checkbox = row.querySelector(`.${field}-toggle input`);
             if (checkbox) {
                 checkbox.checked = value;
             }
         } else {
-            const counterValue = row.querySelector(`.number-counter .counter-value`);
+            const counterValue = row.querySelector(`.${field}-value`);
             if (counterValue) {
                 counterValue.textContent = value;
             }
@@ -505,26 +567,26 @@ function showErrorMessage(message) {
 }
 
 // Initialize contributions (create records for all delegates)
-async function initializeContributions() {
-    const code = getConferenceCodeFromURL();
-    if (!code) return;
+// async function initializeContributions() {
+//     const code = getConferenceCodeFromURL();
+//     if (!code) return;
 
-    try {
-        console.log('🚀 Initializing contributions...');
-        const response = await apiCall(`/api/contributions/${code}/initialize`, {
-            method: 'POST'
-        });
+//     try {
+//         console.log('🚀 Initializing contributions...');
+//         const response = await apiCall(`/api/contributions/${code}/initialize`, {
+//             method: 'POST'
+//         });
 
-        if (response.response.ok && response.data.success) {
-            console.log('✅ Contributions initialized:', response.data.message);
-            fetchAndDisplayContributions();
-        } else {
-            console.error('❌ Failed to initialize contributions:', response.data.message);
-        }
-    } catch (error) {
-        console.error('💥 Error initializing contributions:', error);
-    }
-}
+//         if (response.response.ok && response.data.success) {
+//             console.log('✅ Contributions initialized:', response.data.message);
+//             fetchAndDisplayContributions();
+//         } else {
+//             console.error('❌ Failed to initialize contributions:', response.data.message);
+//         }
+//     } catch (error) {
+//         console.error('💥 Error initializing contributions:', error);
+//     }
+// }
 
 // Placeholder functions for future functionality
 function loadContributions() {
@@ -551,37 +613,23 @@ function filterContributions() {
 function showMessage(message, type = 'info') {
     // Create a simple message display
     const messageDiv = document.createElement('div');
+    messageDiv.className = 'error-message';
     messageDiv.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
         padding: 1rem 1.5rem;
         border-radius: 6px;
-        color: white;
         font-weight: 500;
         z-index: 1000;
         animation: slideIn 0.3s ease-out;
+        background: ${type === 'error' ? 'rgba(203, 161, 53, 0.95)' : '#28a745'};
+        color: ${type === 'error' ? '#ffe082' : 'white'};
+        border: 1px solid #cba135;
+        box-shadow: 0 2px 8px rgba(203, 161, 53, 0.10);
     `;
-
-    switch (type) {
-        case 'success':
-            messageDiv.style.background = '#28a745';
-            break;
-        case 'error':
-            messageDiv.style.background = '#dc3545';
-            break;
-        case 'warning':
-            messageDiv.style.background = '#ffc107';
-            messageDiv.style.color = '#000';
-            break;
-        default:
-            messageDiv.style.background = '#17a2b8';
-    }
-
     messageDiv.textContent = message;
     document.body.appendChild(messageDiv);
-
-    // Remove after 3 seconds
     setTimeout(() => {
         messageDiv.style.animation = 'slideOut 0.3s ease-in';
         setTimeout(() => {
