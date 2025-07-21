@@ -67,9 +67,10 @@ document.addEventListener('DOMContentLoaded', function() {
   
         setTimeout(() => {
           showcase.querySelector('.showcase-image').src = content.imgSrc;
-          showcase.querySelector('h3').textContent = content.title;
-          showcase.querySelector('p').textContent = content.description;
-          showcase.querySelector('button').textContent = content.buttonText;
+          showcase.querySelector('.showcase-description h3').textContent = content.title;
+          // Update only the first <p> in .showcase-description for description
+          showcase.querySelector('.showcase-description p').textContent = content.description;
+          showcase.querySelector('.showcase-signup-btn').textContent = content.buttonText;
           showcase.querySelector('.tags').textContent = content.tags;
           showcase.style.opacity = 1;
         }, 300);
