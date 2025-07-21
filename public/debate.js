@@ -1,19 +1,31 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Get conference code from URL
+    function getConferenceCodeFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('code');
+    }
+
+    // Participant authentication check
+    function isAuthenticated() {
+        // Check for a valid auth token (used in other pages)
+        return !!localStorage.getItem('authToken');
+    }
+
+    const code = getConferenceCodeFromURL();
+    if (!isAuthenticated()) {
+        window.location.href = 'signin_signup.html';
+        return;
+    }
+    if (!code) {
+        window.location.href = 'conference.html';
+        return;
+    }
+
     const addDebateBtn = document.querySelector('.add-debate-btn');
     const debateModal = document.getElementById('addDebateModal');
     const closeDebateModalBtn = document.querySelector('.debate-modal-close');
     const addDebateForm = document.getElementById('addDebateForm');
     const returnConferenceBtn = document.querySelector('.return-conference-btn');
-
-    // Participant authentication check
-    function isAuthenticated() {
-        // Example: check for a token or user info in localStorage (customize as needed)
-        return localStorage.getItem('user') !== null;
-    }
-
-    if (!isAuthenticated()) {
-        window.location.href = 'signin_signup.html';
-    }
 
     // Socket.io live updating
     const socket = io();
@@ -55,9 +67,9 @@ document.addEventListener('DOMContentLoaded', function () {
         addDebateForm.reset();
     });
 
-    // Return to conference page (placeholder)
+    // Return to conference page (preserve code)
     returnConferenceBtn.addEventListener('click', function () {
-        window.location.href = 'conference.html';
+        window.location.href = `conference.html?code=${code}`;
     });
 
     // Leave conference button (placeholder)

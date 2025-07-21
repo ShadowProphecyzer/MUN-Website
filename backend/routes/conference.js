@@ -49,7 +49,20 @@ router.post('/create', authenticateToken, async (req, res) => {
     console.log('[DEBUG] Conference env path:', confEnvPath);
     if (!fs.existsSync(confEnvPath)) {
       console.log('[DEBUG] Creating conference .env file');
-      const envContent = `MONGODB_URI=mongodb://localhost:27017/conference_${code}\n`;
+      
+      // Read main config.env to get base MONGODB_URI
+      const mainConfigPath = path.join(__dirname, '../config.env');
+      const mainConfig = fs.readFileSync(mainConfigPath, 'utf-8');
+      const mongoUriMatch = mainConfig.match(/MONGODB_URI=(.+)/);
+      const baseMongoUri = mongoUriMatch ? mongoUriMatch[1].trim() : 'mongodb://localhost:27017';
+
+      // Construct new URI for the conference
+      // This will replace the last part of the path with the new conference DB name
+      const uri = new URL(baseMongoUri);
+      uri.pathname = `/conference_${code}`;
+      const newMongoUri = uri.toString();
+
+      const envContent = `MONGODB_URI=${newMongoUri}\n`;
       fs.writeFileSync(confEnvPath, envContent);
     }
     // Save to DB
