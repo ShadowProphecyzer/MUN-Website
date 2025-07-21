@@ -14,6 +14,9 @@ RUN npm install --prefix backend
 # Copy the rest of the backend code
 COPY backend/ ./backend/
 
+# Copy the public directory for static files
+COPY public/ ./public/
+
 # Expose the port your app runs on (Railway will detect this automatically but it's good practice)
 EXPOSE 3000
 
