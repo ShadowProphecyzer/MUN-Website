@@ -22,11 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     const votingBtn = document.querySelector('.voting-btn');
-    if (votingBtn) votingBtn.addEventListener('click', () => {
-        const code = getConferenceCodeFromURL();
-        // Optionally, check authentication again here if needed
-        window.location.href = `debate.html?code=${code}`;
-    });
+    if (votingBtn) votingBtn.addEventListener('click', () => alert('Debate Panel feature coming soon!'));
 
     const notePassingBtn = document.querySelector('.note-passing-btn');
     if (notePassingBtn) notePassingBtn.addEventListener('click', () => alert('Note Passing feature coming soon!'));
