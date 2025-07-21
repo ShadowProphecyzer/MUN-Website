@@ -144,6 +144,7 @@ io.on('connection', (socket) => {
 // Connect to MongoDB
 const connectDB = async () => {
   try {
+    console.log('Connecting to MongoDB URI:', process.env.MONGODB_URI); // Debug log
     await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
