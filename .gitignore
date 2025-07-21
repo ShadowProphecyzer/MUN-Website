@@ -1,0 +1,6 @@
+node_modules
+backend/config.env
+conferences/
+*.log
+npm-debug.log*
+.DS_Store 
