@@ -25,7 +25,52 @@ document.addEventListener('DOMContentLoaded', function() {
     if (votingBtn) votingBtn.addEventListener('click', () => alert('Debate Panel feature coming soon!'));
 
     const notePassingBtn = document.querySelector('.note-passing-btn');
-    if (notePassingBtn) notePassingBtn.addEventListener('click', () => alert('Note Passing feature coming soon!'));
+    if (notePassingBtn) notePassingBtn.addEventListener('click', async () => {
+        console.log('[CONFERENCE] Note passing button clicked');
+        const code = getConferenceCodeFromURL();
+        console.log('[CONFERENCE] Conference code from URL:', code);
+        
+        try {
+            // Fetch conference details to get the ID
+            const token = localStorage.getItem('authToken');
+            console.log('[CONFERENCE] Token available:', !!token);
+            if (token) {
+                console.log('[CONFERENCE] Token length:', token.length);
+                console.log('[CONFERENCE] Token starts with:', token.substring(0, 20) + '...');
+            }
+            console.log('[CONFERENCE] Making API call to:', `/api/conference/${code}`);
+            
+            const response = await fetch(`/api/conference/${code}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            console.log('[CONFERENCE] Response status:', response.status);
+            console.log('[CONFERENCE] Response ok:', response.ok);
+            
+            const data = await response.json();
+            console.log('[CONFERENCE] Response data:', data);
+            console.log('[CONFERENCE] Data success:', data.success);
+            console.log('[CONFERENCE] Data.data exists:', !!data.data);
+            console.log('[CONFERENCE] Data.data._id exists:', !!(data.data && data.data._id));
+            
+            if (response.ok && data.success && data.data && data.data._id) {
+                const noteUrl = `note.html?conferenceId=${data.data._id}`;
+                console.log('[CONFERENCE] Redirecting to note passing:', noteUrl);
+                window.location.href = noteUrl;
+            } else {
+                console.log('[CONFERENCE] Failed to fetch conference data');
+                console.log('[CONFERENCE] Response ok:', response.ok);
+                console.log('[CONFERENCE] Data success:', data.success);
+                console.log('[CONFERENCE] Data.data exists:', !!data.data);
+                console.log('[CONFERENCE] Data.data._id exists:', !!(data.data && data.data._id));
+                alert('Failed to load conference information. Please refresh the page.');
+            }
+        } catch (error) {
+            console.error('[CONFERENCE] Error fetching conference data:', error);
+            alert('Error loading conference information. Please try again.');
+        }
+    });
 
     const contributionsBtn = document.querySelector('.contributions-btn');
     if (contributionsBtn) contributionsBtn.addEventListener('click', () => {
@@ -35,6 +80,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const reportBtn = document.querySelector('.report-btn');
     if (reportBtn) reportBtn.addEventListener('click', () => alert('Database Report feature coming soon!'));
+
+    // Moderation Panel button (only for Moderator/GOD)
+    const moderationBtn = document.querySelector('.moderation-btn');
+    if (moderationBtn) moderationBtn.addEventListener('click', () => {
+        const code = getConferenceCodeFromURL();
+        window.location.href = `moderation.html?code=${code}`;
+    });
 
     // Leave Conference button
     const leaveConferenceBtn = document.querySelector('.leave-conference-btn');
@@ -49,6 +101,7 @@ function displayUserInfo(participant) {
     const countryDisplay = document.getElementById('userCountryDisplay');
     const countryElem = document.getElementById('userCountry');
     const roleCard = document.querySelector('.user-role-card');
+    const moderationCard = document.getElementById('moderation-card');
     
     if (roleElem) {
         // Capitalize the first letter of the role
@@ -67,6 +120,15 @@ function displayUserInfo(participant) {
         if (countryElem) countryElem.textContent = participant.country;
     } else {
         if (countryDisplay) countryDisplay.style.display = 'none';
+    }
+    
+    // Show moderation panel for Moderator and GOD roles
+    if (moderationCard) {
+        if (['god', 'moderator'].includes(participant.role.toLowerCase())) {
+            moderationCard.style.display = 'block';
+        } else {
+            moderationCard.style.display = 'none';
+        }
     }
 }
 
@@ -146,6 +208,8 @@ async function displayConferenceDetails() {
         const data = await response.json();
         if (response.ok && data.success && data.data) {
             const conf = data.data;
+            // Store conference data globally for use by other functions
+            window.currentConference = conf;
             const nameElem = document.getElementById('conferenceName');
             if (nameElem) nameElem.textContent = conf.name;
             // Display committee name
@@ -164,7 +228,9 @@ async function displayConferenceDetails() {
 
 function getConferenceCodeFromURL() {
     const params = new URLSearchParams(window.location.search);
-    return params.get('code');
+    const code = params.get('code');
+    console.log('[CONFERENCE] Extracted code from URL:', code);
+    return code;
 }
 
 // Utility function for API calls with automatic token refresh

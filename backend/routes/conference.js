@@ -314,7 +314,14 @@ router.get('/:code', authenticateToken, async (req, res) => {
     }
     
     // Check if conference exists
+    console.log('[DEBUG] Looking for conference with code:', code);
     const conference = await Conference.findOne({ code });
+    console.log('[DEBUG] Conference found:', !!conference);
+    if (conference) {
+      console.log('[DEBUG] Conference _id:', conference._id);
+      console.log('[DEBUG] Conference name:', conference.name);
+    }
+    
     if (!conference) {
       console.log('[DEBUG] Conference not found');
       return res.status(404).json({ success: false, message: 'Conference not found.' });
@@ -327,7 +334,13 @@ router.get('/:code', authenticateToken, async (req, res) => {
     const Participant = db.models.Participant || db.model('Participant', ParticipantSchema);
     
     const userEmail = req.user.email.trim().toLowerCase();
+    console.log('[DEBUG] Looking for participant with email:', userEmail);
     const participant = await Participant.findOne({ email: userEmail });
+    console.log('[DEBUG] Participant found:', !!participant);
+    if (participant) {
+      console.log('[DEBUG] Participant role:', participant.role);
+      console.log('[DEBUG] Participant name:', participant.name);
+    }
     
     if (!participant) {
       console.log('[DEBUG] User not a participant in this conference');
@@ -338,9 +351,15 @@ router.get('/:code', authenticateToken, async (req, res) => {
     }
     
     console.log('[DEBUG] Conference details fetched successfully');
-    res.json({
+    console.log('[DEBUG] Conference _id:', conference._id);
+    console.log('[DEBUG] Conference code:', conference.code);
+    console.log('[DEBUG] Conference name:', conference.name);
+    console.log('[DEBUG] Participant role:', participant.role);
+    
+    const responseData = {
       success: true,
       data: {
+        _id: conference._id,
         code: conference.code,
         name: conference.name,
         committeeName: conference.committeeName,
@@ -348,11 +367,29 @@ router.get('/:code', authenticateToken, async (req, res) => {
         participantRole: participant.role,
         createdAt: conference.createdAt
       }
-    });
+    };
+    
+    console.log('[DEBUG] Sending response:', responseData);
+    res.json(responseData);
     
   } catch (error) {
     console.error('[DEBUG] Fetch conference error:', error);
     res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+});
+
+// GET /api/conference/id/:id
+router.get('/id/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const conference = await Conference.findById(id);
+    if (!conference) {
+      return res.status(404).json({ success: false, message: 'Conference not found.' });
+    }
+    res.json({ success: true, conference });
+  } catch (error) {
+    console.error('Error fetching conference by ID:', error);
+    res.status(500).json({ success: false, message: 'Error fetching conference.' });
   }
 });
 

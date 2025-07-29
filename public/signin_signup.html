@@ -48,6 +48,33 @@
           <input type="email" id="regEmail" name="email" placeholder="Email" required>
           <input type="password" id="regPassword" name="password" placeholder="Password" required>
           <input type="password" id="regConfirmPassword" name="confirmPassword" placeholder="Confirm Password" required>
+          <div id="passwordStrength" class="password-strength-container">
+            <div class="strength-bar">
+              <div id="strengthBar" class="strength-fill"></div>
+            </div>
+            <div id="passwordRequirements" class="password-requirements">
+              <div class="requirement" data-requirement="length">
+                <span class="requirement-icon">❌</span>
+                <span class="requirement-text">At least 8 characters</span>
+              </div>
+              <div class="requirement" data-requirement="uppercase">
+                <span class="requirement-icon">❌</span>
+                <span class="requirement-text">One uppercase letter</span>
+              </div>
+              <div class="requirement" data-requirement="lowercase">
+                <span class="requirement-icon">❌</span>
+                <span class="requirement-text">One lowercase letter</span>
+              </div>
+              <div class="requirement" data-requirement="number">
+                <span class="requirement-icon">❌</span>
+                <span class="requirement-text">One number</span>
+              </div>
+              <div class="requirement" data-requirement="special">
+                <span class="requirement-icon">❌</span>
+                <span class="requirement-text">One special character</span>
+              </div>
+            </div>
+          </div>
 
           <!--Part 6.1.3: Sign-up Confirmation-->
           <button type="submit" id="registerBtn">Sign Up</button>

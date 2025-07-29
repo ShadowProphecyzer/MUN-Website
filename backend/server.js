@@ -16,6 +16,8 @@ const participantsV2Routes = require('./routes/participantsV2');
 const userCommitteesRoutes = require('./routes/userCommittees');
 const amendmentsRoutes = require('./routes/amendments');
 const contributionsRoutes = require('./routes/contributions');
+const notesRoutes = require('./routes/notes');
+const hierarchicalNotesRoutes = require('./routes/hierarchicalNotes');
 
 const app = express();
 const server = http.createServer(app);
@@ -26,6 +28,32 @@ const io = socketio(server, {
   }
 });
 app.set('io', io);
+
+// WebSocket connection handling
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+  
+  // Join conference room
+  socket.on('join-conference', (conferenceId) => {
+    socket.join(`conference-${conferenceId}`);
+    console.log(`User ${socket.id} joined conference ${conferenceId}`);
+  });
+  
+  // Leave conference room
+  socket.on('leave-conference', (conferenceId) => {
+    socket.leave(`conference-${conferenceId}`);
+    console.log(`User ${socket.id} left conference ${conferenceId}`);
+  });
+  
+  // Handle note updates
+  socket.on('note-update', (data) => {
+    socket.to(`conference-${data.conferenceId}`).emit('note-updated', data);
+  });
+  
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+});
 const PORT = process.env.PORT || 3000;
 
 // Security middleware
@@ -71,6 +99,8 @@ app.use('/api/participantsV2', participantsV2Routes);
 app.use('/api/user-committees', userCommitteesRoutes);
 app.use('/api/amendments', amendmentsRoutes);
 app.use('/api/contributions', contributionsRoutes);
+app.use('/api/hierarchical-notes', hierarchicalNotesRoutes);
+app.use('/api/notes', notesRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -97,6 +127,14 @@ app.get('/learn', (req, res) => {
 
 app.get('/signin_signup', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/signin_signup.html'));
+});
+
+app.get('/note', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/note.html'));
+});
+
+app.get('/note/:conferenceId', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/note.html'));
 });
 
 app.get('/dashboard', (req, res) => {

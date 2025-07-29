@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--Part 1: Meta Tags-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!--Part 2: Webpage Title-->
+    <title>Note Passing - MUN Website</title>
+
+    <!--Part 3: Default Cascading Style Sheets-->
+    <link id="stylesheet" rel="stylesheet" href="note.css">
+
+    <!--Part 4: Default Javascript-->
+    <script src="socket.io.min.js"></script>
+    <script defer src="hierarchicalNote.js"></script>
+</head>
+<body>
+    <!--Part 5: Main Navigation Bar-->
+    <header class="main-nav-bar">
+        <!--Part 5.1: Contact Us Navigation -->
+        <a href="contact_us.html" class="contact_us">☎ Contact Us</a>
+
+        <!--Part 5.2: MUN Logo-->
+        <a href="homepage.html" class="mun-logo"></a>
+
+        <!--Part 5.3: Additional Options-->
+        <div class="additional-options">
+            <!--Part 5.3.1: Learn More Navigation-->
+            <a href="learn.html" class="learn-more">Learn More</a>
+            
+            <!--Part 5.3.2: User Menu and Leave Conference-->
+            <span class="user-menu" id="userMenu">Welcome, <span id="userName">User</span></span>
+            <button class="leave-conference-btn conference-logout-btn">Leave Conference</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="note-container">
+        <!-- Navigation Bar -->
+        <div class="navigation-bar">
+            <button id="return-to-dashboard" class="return-btn">← Return to Conference</button>
+            <div class="nav-spacer"></div>
+            <button id="moderation-panel-btn" class="moderator-toggle-btn" style="display: none;">🔧 Moderation Panel</button>
+        </div>
+
+        <!-- Chat Interface -->
+        <div class="chat-interface">
+            <!-- Participants List -->
+            <div class="participants-panel">
+                <div class="panel-header">
+                    <h3>Participants</h3>
+                    <button id="refresh-participants" class="refresh-btn">🔄</button>
+                </div>
+                <div class="participants-list" id="participants-list">
+                    <!-- Participants will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="chat-area">
+                <!-- Chat Header -->
+                <div class="chat-header" id="chat-header">
+                    <div class="chat-header-info">
+                        <h3 id="chat-recipient-name">Select a participant to start chatting</h3>
+                        <p id="chat-recipient-role"></p>
+                    </div>
+                </div>
+
+                <!-- Messages Container -->
+                <div class="messages-container" id="messages-container">
+                    <div class="welcome-message">
+                        <h4>Welcome to Hierarchical Note Passing</h4>
+                        <p>Select a participant from the list to start sending notes. Messages are moderated based on your role and permissions.</p>
+                    </div>
+                </div>
+
+                <!-- Message Input -->
+                <div class="message-input-container" id="message-input-container" style="display: none;">
+                    <div class="input-wrapper">
+                        <textarea 
+                            id="message-input" 
+                            placeholder="Type your message here..."
+                            maxlength="1000"
+                        ></textarea>
+                        <button id="send-message-btn" class="send-btn">Send</button>
+                    </div>
+                    <div class="character-count">
+                        <span id="char-count">0</span>/1000
+                    </div>
+                </div>
+            </div>
+
+            <!-- Moderator Panel (only visible to moderators) -->
+            <div class="moderator-panel" id="moderator-panel" style="display: none;">
+                <div class="panel-header">
+                    <h3>Moderation Panel</h3>
+                    <button id="refresh-pending" class="refresh-btn">🔄</button>
+                </div>
+                <div class="pending-notes" id="pending-notes">
+                    <!-- Pending notes will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Messages -->
+        <div id="status-message" class="status-message"></div>
+    </main>
+
+    <!-- Rejection Modal -->
+    <div id="rejection-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Reject Message</h3>
+                <span class="close" id="close-rejection-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Please provide a reason for rejecting this message:</p>
+                <textarea id="rejection-reason" placeholder="Enter rejection reason..." maxlength="500"></textarea>
+                <div class="modal-actions">
+                    <button id="confirm-reject-btn" class="btn-reject">Reject Message</button>
+                    <button id="cancel-reject-btn" class="btn-cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>Loading...</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUN - Moderation Panel</title>
+    <link rel="stylesheet" href="moderation.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <h1 class="logo">MUN</h1>
+                <span class="logo-subtitle">Model United Nations</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="contact_us.html" class="nav-link">
+                    <span class="nav-icon">📞</span>
+                    Contact Us
+                </a>
+                <a href="learn.html" class="nav-link">
+                    <span class="nav-icon">📚</span>
+                    Learn More
+                </a>
+                <div class="user-menu" id="userMenu">
+                    <span class="welcome-text">Welcome, <span id="userName">[Username]</span></span>
+                    <button class="leave-btn" id="leaveConferenceBtn">Leave Conference</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="moderation-container">
+        <!-- Navigation Bar -->
+        <div class="navigation-bar">
+            <button id="return-to-conference" class="return-btn">← Return to Conference</button>
+            <div class="nav-spacer"></div>
+            <h2 class="page-title">Moderation Panel</h2>
+        </div>
+
+        <!-- Access Control Message -->
+        <div id="access-denied" class="access-denied" style="display: none;">
+            <div class="access-denied-content">
+                <h2>🔒 Access Denied</h2>
+                <p>You do not have permission to access the moderation panel.</p>
+                <p>Only Moderator and GOD roles can access this page.</p>
+                <button onclick="window.location.href='conference.html'" class="btn-primary">Return to Conference</button>
+            </div>
+        </div>
+
+        <!-- Moderation Interface -->
+        <div id="moderation-interface" class="moderation-interface" style="display: none;">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="pending-notes">📝 Pending Notes</button>
+                <button class="tab-btn" data-tab="participants">👥 Participants</button>
+            </div>
+
+            <!-- Pending Notes Tab -->
+            <div id="pending-notes-tab" class="tab-content active">
+                <div class="panel-header">
+                    <h3>Pending Notes for Moderation</h3>
+                    <button id="refresh-pending" class="refresh-btn">🔄</button>
+                </div>
+                <div class="pending-notes" id="pending-notes">
+                    <!-- Pending notes will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Participants Tab -->
+            <div id="participants-tab" class="tab-content">
+                <div class="panel-header">
+                    <h3>Manage Participants</h3>
+                    <button id="refresh-participants" class="refresh-btn">🔄</button>
+                </div>
+                
+                <!-- Add Participant Section -->
+                <div class="add-participant-section">
+                    <div class="add-participant-row">
+                        <input type="text" id="addParticipantInput" placeholder="Add user email">
+                        <select id="addRoleSelect" class="role-select">
+                            <option value="unassigned">Unassigned</option>
+                            <option value="administrator">Administrator</option>
+                            <option value="moderator">Moderator</option>
+                            <option value="chair">Chair</option>
+                            <option value="delegate">Delegate</option>
+                        </select>
+                        <select id="addCountrySelect" class="country-select" style="display:none;"></select>
+                        <button id="addParticipantBtn">Add</button>
+                    </div>
+                </div>
+
+                <div class="participants-list" id="participantsList">
+                    <!-- Participants will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Messages -->
+        <div id="status-message" class="status-message"></div>
+    </main>
+
+    <!-- Rejection Modal -->
+    <div id="rejection-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Reject Message</h3>
+                <span class="close" id="close-rejection-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Please provide a reason for rejecting this message:</p>
+                <textarea id="rejection-reason" placeholder="Enter rejection reason..." maxlength="500"></textarea>
+                <div class="modal-actions">
+                    <button id="confirm-reject-btn" class="btn-reject">Reject Message</button>
+                    <button id="cancel-reject-btn" class="btn-cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Socket.IO -->
+    <script src="socket.io.min.js"></script>
+    <script src="moderation.js"></script>
+</body>
+</html> 

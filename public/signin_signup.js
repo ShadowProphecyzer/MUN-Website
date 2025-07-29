@@ -17,6 +17,11 @@ const loginPassword = document.getElementById("loginPassword");
 const loginBtnSubmit = document.getElementById("loginBtn");
 const loginMessage = document.getElementById("loginMessage");
 
+// Password strength checker elements
+const passwordStrength = document.getElementById("passwordStrength");
+const strengthBar = document.getElementById("strengthBar");
+const passwordRequirements = document.getElementById("passwordRequirements");
+
 registerBtn.addEventListener("click", () => {
   container.classList.add("active");
 });
@@ -24,6 +29,66 @@ registerBtn.addEventListener("click", () => {
 loginBtn.addEventListener("click", () => {
   container.classList.remove("active");
 });
+
+// Password strength checker
+regPassword.addEventListener("input", checkPasswordStrength);
+regPassword.addEventListener("focus", () => {
+  passwordStrength.classList.add("show");
+});
+
+regPassword.addEventListener("blur", () => {
+  if (regPassword.value === "") {
+    passwordStrength.classList.remove("show");
+  }
+});
+
+function checkPasswordStrength() {
+  const password = regPassword.value;
+  const requirements = {
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    number: /[0-9]/.test(password),
+    special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+  };
+
+  // Update requirement indicators
+  Object.keys(requirements).forEach(req => {
+    const requirementElement = document.querySelector(`[data-requirement="${req}"]`);
+    const iconElement = requirementElement.querySelector('.requirement-icon');
+    
+    if (requirements[req]) {
+      // Hide the requirement when met
+      requirementElement.style.display = 'none';
+    } else {
+      // Show the requirement when not met
+      requirementElement.style.display = 'flex';
+      iconElement.textContent = '❌';
+    }
+  });
+
+  // Calculate strength
+  const metRequirements = Object.values(requirements).filter(Boolean).length;
+  let strength = 'weak';
+  let strengthClass = 'weak';
+
+  if (metRequirements >= 5) {
+    strength = 'strong';
+    strengthClass = 'strong';
+  } else if (metRequirements >= 4) {
+    strength = 'good';
+    strengthClass = 'good';
+  } else if (metRequirements >= 3) {
+    strength = 'fair';
+    strengthClass = 'fair';
+  } else {
+    strength = 'weak';
+    strengthClass = 'weak';
+  }
+
+  // Update strength bar
+  strengthBar.className = `strength-fill ${strengthClass}`;
+}
 
 function checkAuthStatus() {
   const token = localStorage.getItem('authToken');
@@ -85,8 +150,19 @@ registerForm.addEventListener("submit", async (e) => {
     return;
   }
   
-  if (formData.password.length < 6) {
-    showMessage(registerMessage, "Password must be at least 6 characters long", "error");
+  // Check password strength requirements
+  const password = formData.password;
+  const requirements = {
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    number: /[0-9]/.test(password),
+    special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+  };
+
+  const metRequirements = Object.values(requirements).filter(Boolean).length;
+  if (metRequirements < 3) {
+    showMessage(registerMessage, "Password must meet at least 3 requirements (8+ chars, uppercase, lowercase, number, special char)", "error");
     return;
   }
   

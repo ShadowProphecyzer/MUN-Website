@@ -121,7 +121,7 @@ function renderParticipants(participants) {
     let roleLabel = p.role.charAt(0).toUpperCase() + p.role.slice(1);
     if (p.role.toLowerCase() === 'delegate') {
       if (p.country && p.country.trim() !== '') {
-        roleLabel += ` (${p.country})`;
+        roleLabel = `Delegate of '${p.country}'`;
       } else {
         console.log('[DEBUG] Delegate missing country:', p);
       }
@@ -266,7 +266,7 @@ function addDropdownListeners() {
 }
 
 async function addParticipant(email, role, country = '') {
-  if (!confirm(`Add ${email} as ${role}${role==='delegate' ? ' ('+country+')' : ''}?`)) return false;
+  if (!confirm(`Add ${email} as ${role}${role==='delegate' ? ` of '${country}'` : ''}?`)) return false;
   const body = { email, role };
   if (role === 'delegate') body.country = country;
   const res = await fetch(`/api/participants/${conferenceCode}/add`, {
